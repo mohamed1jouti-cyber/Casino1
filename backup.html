@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Backup/Restore - MyCasino</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="sync_storage.js"></script>
+    <style>
+        .backup-container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        .backup-header { background: linear-gradient(135deg, #1a202c, #2d3748); color: #fff; padding: 24px; border-radius: 12px; text-align: center; margin: 20px 0; }
+        .card { background: #1a202c; border: 2px solid #4a5568; border-radius: 12px; padding: 20px; margin: 15px 0; }
+        .btn { background: #fbbf24; color: #1a202c; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        .btn.secondary { background: #4a5568; color: #fff; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        textarea { width: 100%; min-height: 200px; padding: 10px; border-radius: 8px; border: 2px solid #4a5568; background: #0b1220; color: #e2e8f0; }
+        .small { color: #a0aec0; font-size: 12px; }
+        .back-btn { background: #666; color: #fff; border: none; padding: 10px 20px; border-radius: 20px; text-decoration: none; display: inline-block; }
+    </style>
+    <script>
+        const API = 'storage_api.php';
+        const FIXED_KEYS = [
+            'demo_users','demo_wallets','demo_transactions','withdrawRequests','depositRequests','vip_requests','transfer_requests','notifications'
+        ];
+        function isHttp(){ return location.protocol === 'http:' || location.protocol === 'https:'; }
+        async function apiGetAll(){
+            try{ const r = await fetch(API+'?action=get_all'); return await r.json(); }catch(e){ return {success:false,error:e.message}; }
+        }
+        async function apiSetBatch(items){
+            try{
+                const r = await fetch(API+'?action=set_batch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({items})});
+                return await r.json();
+            }catch(e){ return {success:false,error:e.message}; }
+        }
+        function readLocalMap(){
+            const out = {};
+            for (const k of FIXED_KEYS){
+                const raw = localStorage.getItem(k);
+                if (raw != null){ try{ out[k]=JSON.parse(raw);}catch{ out[k]=raw; } }
+            }
+            // include balance: and sec_code: keys
+            for (let i=0;i<localStorage.length;i++){
+                const k = localStorage.key(i);
+                if (!k) continue;
+                if (k.startsWith('balance:') || k.startsWith('sec_code:')){
+                    const v = localStorage.getItem(k);
+                    try{ out[k]=JSON.parse(v);}catch{ out[k]=v; }
+                }
+            }
+            return out;
+        }
+        async function exportData(){
+            const client = readLocalMap();
+            let server = {success:false};
+            if (isHttp()) server = await apiGetAll();
+            const payload = { timestamp: new Date().toISOString(), client, server: server.success ? server.data : null };
+            const blob = new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = `casino-backup-${Date.now()}.json`; a.click();
+            URL.revokeObjectURL(url);
+            const ta = document.getElementById('preview');
+            ta.value = JSON.stringify(payload,null,2);
+        }
+        async function importDataFromText(){
+            const ta = document.getElementById('preview');
+            let parsed; try{ parsed = JSON.parse(ta.value); }catch{ alert('Invalid JSON'); return; }
+            const items = parsed.client || parsed; // accept either full payload or raw map
+            // write to localStorage
+            Object.keys(items).forEach(k=>{
+                try{ localStorage.setItem(k, JSON.stringify(items[k])); }catch{ localStorage.setItem(k, String(items[k])); }
+            });
+            // push to server if http
+            if (isHttp()){
+                const allow = {};
+                for (const [k,v] of Object.entries(items)){
+                    if (FIXED_KEYS.includes(k) || k.startsWith('balance:') || k.startsWith('sec_code:')) allow[k]=v;
+                }
+                await apiSetBatch(allow);
+            }
+            alert('Import completed. Reload pages to see changes.');
+        }
+        function loadFile(evt){
+            const f = evt.target.files && evt.target.files[0];
+            if (!f) return;
+            const reader = new FileReader();
+            reader.onload = () => { document.getElementById('preview').value = reader.result; };
+            reader.readAsText(f);
+        }
+    </script>
+    
+    
+</head>
+<body>
+    <div class="backup-container">
+        <a href="admin.html" class="back-btn">← Back to Admin</a>
+        <div class="backup-header">
+            <h1>🗄️ Admin Backup & Restore</h1>
+            <p class="small">Export or import site data (users, wallets, requests, balances, security codes, notifications).</p>
+        </div>
+        <div class="grid">
+            <div class="card">
+                <h2 style="color:#fbbf24;margin-top:0;">Export Data</h2>
+                <p class="small">Downloads a JSON file containing current client data and, if hosted, server data snapshot.</p>
+                <button class="btn" onclick="exportData()">⬇️ Download Backup JSON</button>
+            </div>
+            <div class="card">
+                <h2 style="color:#fbbf24;margin-top:0;">Import Data</h2>
+                <p class="small">Paste JSON below or load a file, then click Import. This updates browser storage and server storage (if hosted).</p>
+                <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px;">
+                    <input type="file" accept="application/json" onchange="loadFile(event)" />
+                    <button class="btn secondary" onclick="importDataFromText()">⬆️ Import Now</button>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <h3 style="color:#e2e8f0;margin-top:0;">Backup JSON Preview / Import Input</h3>
+            <textarea id="preview" placeholder="Backup JSON will appear here after export. You can also paste a backup here to import."></textarea>
+        </div>
+    </div>
+</body>
+</html>
+
+
+
+
+
+
+
+

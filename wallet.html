@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallet - Casino</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="sync_storage.js"></script>
+    <style>
+        .wallet-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .wallet-header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .balance-display {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .vip-transfer {
+            background: #1a202c;
+            border: 2px solid #4a5568;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .wallet-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .action-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .action-card.deposit {
+            border-color: #4CAF50;
+        }
+        
+        .action-card.withdraw {
+            border-color: #f44336;
+        }
+        
+        .action-card.history {
+            border-color: #2196F3;
+        }
+        
+        .action-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        
+        .action-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .action-description {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        .action-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .action-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .transaction-history {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-top: 30px;
+        }
+        
+        .history-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+        
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s ease;
+        }
+        
+        .transaction-item:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+        
+        .transaction-info {
+            flex: 1;
+        }
+        
+        .transaction-type {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .transaction-date {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .transaction-amount {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .amount-positive {
+            color: #4CAF50;
+        }
+        
+        .amount-negative {
+            color: #f44336;
+        }
+        
+        .back-btn {
+            background: #666;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        
+        .back-btn:hover {
+            background: #555;
+        }
+        
+        .no-transactions {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="wallet-container">
+        <a href="welcome.html" class="back-btn">← Back to Welcome</a>
+        
+        <div class="wallet-header">
+            <h1>💰 Wallet</h1>
+            <div class="balance-display" id="currentBalance">$0.00</div>
+            <p>Welcome back, <span id="username">User</span>!</p>
+        </div>
+        <div class="vip-transfer" id="vipTransfer" style="display:none;">
+            <h2 style="color:#fbbf24;margin:0 0 12px 0;">VIP Transfer</h2>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;align-items:flex-end;">
+                <div>
+                    <label>Recipient Username</label>
+                    <input id="transferTo" type="text" placeholder="username" style="width:100%;padding:8px;border-radius:8px;border:2px solid #4a5568;background:#0b1220;color:#e2e8f0;" />
+                </div>
+                <div>
+                    <label>Amount</label>
+                    <input id="transferAmount" type="number" min="1" placeholder="50" style="width:100%;padding:8px;border-radius:8px;border:2px solid #4a5568;background:#0b1220;color:#e2e8f0;" />
+                </div>
+                <div style="grid-column:1/-1;display:flex;gap:10px;align-items:center;">
+                    <button onclick="requestVip()" class="action-btn" id="requestVipBtn">Request VIP</button>
+                    <button onclick="doVipTransfer()" class="action-btn" id="doTransferBtn">Transfer</button>
+                    <span id="vipMsg" style="color:#a0aec0"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="vip-transfer" id="transferRequestBox" style="display:block;">
+            <h2 style="color:#fbbf24;margin:0 0 12px 0;">Transfer Request (Reviewed by Admin)</h2>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;align-items:flex-end;">
+                <div>
+                    <label>Recipient Username</label>
+                    <input id="trqTo" type="text" placeholder="username" style="width:100%;padding:8px;border-radius:8px;border:2px solid #4a5568;background:#0b1220;color:#e2e8f0;" />
+                </div>
+                <div>
+                    <label>Amount</label>
+                    <input id="trqAmount" type="number" min="1" placeholder="50" style="width:100%;padding:8px;border-radius:8px;border:2px solid #4a5568;background:#0b1220;color:#e2e8f0;" />
+                </div>
+                <div>
+                    <label>Security Code</label>
+                    <input id="trqCode" type="password" placeholder="4-8 digits" style="width:100%;padding:8px;border-radius:8px;border:2px solid #4a5568;background:#0b1220;color:#e2e8f0;" />
+                </div>
+                <div style="grid-column:1/-1;display:flex;gap:10px;align-items:center;">
+                    <button onclick="submitTransferRequest()" class="action-btn">Submit Transfer Request</button>
+                    <span id="trqMsg" style="color:#a0aec0"></span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="wallet-actions">
+            <div class="action-card deposit">
+                <div class="action-icon">💳</div>
+                <div class="action-title">Deposit Funds</div>
+                <div class="action-description">Submit a deposit request and admin will provide payment instructions</div>
+                <a href="deposit.html" class="action-btn">Deposit Now</a>
+            </div>
+            
+            <div class="action-card withdraw">
+                <div class="action-icon">💸</div>
+                <div class="action-title">Withdraw Funds</div>
+                <div class="action-description">Withdraw your winnings to your Ethereum wallet</div>
+                <a href="withdraw.html" class="action-btn">Withdraw Now</a>
+            </div>
+            
+            <div class="action-card history">
+                <div class="action-icon">📊</div>
+                <div class="action-title">Transaction History</div>
+                <div class="action-description">View all your deposits and withdrawals</div>
+                <button class="action-btn" onclick="toggleHistory()">View History</button>
+            </div>
+        </div>
+        
+        <div class="transaction-history" id="transactionHistory" style="display: none;">
+            <h2 class="history-title">Transaction History</h2>
+            <div id="transactionsList">
+                <div class="no-transactions">No transactions yet</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load user data
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserData();
+            loadTransactionHistory();
+        });
+
+        function loadUserData() {
+            const username = localStorage.getItem('username') || 'User';
+            const uname = (localStorage.getItem('username') || 'Player').toString();
+            const balanceKey = `balance:${uname}`;
+            const balance = localStorage.getItem(balanceKey) || '0';
+            
+            document.getElementById('username').textContent = username;
+            updateBalanceDisplay(balance);
+            // Show VIP transfer if user is VIP
+            try {
+                const users = JSON.parse(localStorage.getItem('demo_users') || '[]');
+                const u = users.find(x => String(x.username).toLowerCase() === String(uname).toLowerCase());
+                document.getElementById('vipTransfer').style.display = u && u.is_vip ? 'block' : 'block'; // show with request option if not VIP
+                document.getElementById('doTransferBtn').style.display = u && u.is_vip ? 'inline-block' : 'none';
+                document.getElementById('requestVipBtn').style.display = u && u.is_vip ? 'none' : 'inline-block';
+            } catch(_) {}
+        }
+
+        function updateBalanceDisplay(balance) {
+            const balanceNum = parseInt(balance) || 0;
+            document.getElementById('currentBalance').textContent = `$${balanceNum.toLocaleString()}`;
+        }
+
+        function requestVip() {
+            const uname = (localStorage.getItem('username') || 'Player').toString();
+            const requests = JSON.parse(localStorage.getItem('vip_requests') || '[]');
+            if (requests.find(r => String(r.username).toLowerCase() === uname.toLowerCase() && r.status !== 'rejected')) {
+                document.getElementById('vipMsg').textContent = 'VIP request already submitted.';
+                return;
+            }
+            requests.push({ username: uname, requestedAt: new Date().toISOString(), status: 'pending' });
+            localStorage.setItem('vip_requests', JSON.stringify(requests));
+            document.getElementById('vipMsg').textContent = 'VIP request submitted. Admin will review.';
+        }
+
+        function doVipTransfer() {
+            const from = (localStorage.getItem('username') || 'Player').toString();
+            const to = (document.getElementById('transferTo').value || '').trim();
+            const amt = parseInt(document.getElementById('transferAmount').value || '0');
+            const msgEl = document.getElementById('vipMsg');
+            if (!to || !amt || amt <= 0) { msgEl.textContent = 'Enter recipient and positive amount.'; return; }
+            // Check security code
+            const secStored = localStorage.getItem(`sec_code:${from}`) || '';
+            const secEntered = prompt('Enter your security code to confirm transfer:');
+            if (!secStored || secEntered !== secStored) { msgEl.textContent = 'Invalid security code.'; return; }
+            const users = JSON.parse(localStorage.getItem('demo_users') || '[]');
+            const wallets = JSON.parse(localStorage.getItem('demo_wallets') || '{}');
+            const uf = users.find(u => String(u.username).toLowerCase() === from.toLowerCase());
+            const ut = users.find(u => String(u.username).toLowerCase() === to.toLowerCase());
+            if (!uf || !uf.is_vip) { msgEl.textContent = 'Only VIPs can transfer.'; return; }
+            if (!ut) { msgEl.textContent = 'Recipient not found.'; return; }
+            const wf = wallets[uf.id] || { balance: 0 };
+            const wt = wallets[ut.id] || { balance: 0 };
+            if ((parseInt(wf.balance)||0) < amt) { msgEl.textContent = 'Insufficient balance.'; return; }
+            wf.balance = (parseInt(wf.balance)||0) - amt;
+            wt.balance = (parseInt(wt.balance)||0) + amt;
+            wallets[uf.id] = wf; wallets[ut.id] = wt;
+            localStorage.setItem('demo_wallets', JSON.stringify(wallets));
+            localStorage.setItem(`balance:${from}`, String(wf.balance));
+            localStorage.setItem(`balance:${to}`, String(wt.balance));
+            localStorage.setItem('balance_sync', JSON.stringify({ username: from, balance: wf.balance, ts: Date.now() }));
+            localStorage.setItem('balance_sync', JSON.stringify({ username: to, balance: wt.balance, ts: Date.now()+1 }));
+            msgEl.textContent = 'Transfer completed.';
+            loadUserData();
+        }
+
+        function submitTransferRequest() {
+            const from = (localStorage.getItem('username') || 'Player').toString();
+            const to = (document.getElementById('trqTo').value || '').trim();
+            const amt = parseInt(document.getElementById('trqAmount').value || '0');
+            const code = (document.getElementById('trqCode').value || '').trim();
+            const msgEl = document.getElementById('trqMsg');
+            if (!to || !amt || amt <= 0 || !code) { msgEl.textContent = 'Fill all fields with valid values.'; return; }
+            const secStored = localStorage.getItem(`sec_code:${from}`) || '';
+            if (!secStored || code !== secStored) { msgEl.textContent = 'Invalid security code.'; return; }
+            // Save request
+            const reqs = JSON.parse(localStorage.getItem('transfer_requests') || '[]');
+            const id = `TR-${Date.now()}-${Math.floor(Math.random()*1000)}`;
+            reqs.push({ id, from, to, amount: amt, status: 'pending', requestedAt: new Date().toISOString() });
+            localStorage.setItem('transfer_requests', JSON.stringify(reqs));
+            msgEl.textContent = 'Transfer request submitted. Admin will review.';
+            document.getElementById('trqTo').value = '';
+            document.getElementById('trqAmount').value = '';
+            document.getElementById('trqCode').value = '';
+        }
+
+        function loadTransactionHistory() {
+            const transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+            const transactionsList = document.getElementById('transactionsList');
+            
+            if (transactions.length === 0) {
+                transactionsList.innerHTML = '<div class="no-transactions">No transactions yet</div>';
+                return;
+            }
+            
+            transactionsList.innerHTML = '';
+            transactions.forEach(transaction => {
+                const transactionItem = document.createElement('div');
+                transactionItem.className = 'transaction-item';
+                
+                const amountClass = transaction.type === 'deposit' ? 'amount-positive' : 'amount-negative';
+                const amountPrefix = transaction.type === 'deposit' ? '+' : '-';
+                
+                transactionItem.innerHTML = `
+                    <div class="transaction-info">
+                        <div class="transaction-type">${transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1)}</div>
+                        <div class="transaction-date">${transaction.date}</div>
+                    </div>
+                    <div class="transaction-amount ${amountClass}">
+                        ${amountPrefix}$${transaction.amount}
+                    </div>
+                `;
+                
+                transactionsList.appendChild(transactionItem);
+            });
+        }
+
+        function toggleHistory() {
+            const history = document.getElementById('transactionHistory');
+            if (history.style.display === 'none') {
+                history.style.display = 'block';
+                loadTransactionHistory();
+            } else {
+                history.style.display = 'none';
+            }
+        }
+
+        // Update balance when page becomes visible
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                const uname = (localStorage.getItem('username') || 'Player').toString();
+                const balanceKey = `balance:${uname}`;
+                const balance = localStorage.getItem(balanceKey) || '0';
+                updateBalanceDisplay(balance);
+            }
+        });
+    </script>
+</body>
+</html>

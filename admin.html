@@ -1,0 +1,3265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - MyCasino</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="sync_storage.js"></script>
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .admin-header {
+            background: linear-gradient(135deg, #1a202c, #2d3748);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .stat-card {
+            background: #2d3748;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid #4a5568;
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #fbbf24;
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            color: #a0aec0;
+            font-size: 14px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin: 30px 0;
+            border-bottom: 2px solid #4a5568;
+        }
+        
+        .tab {
+            padding: 15px 30px;
+            background: #4a5568;
+            color: white;
+            border: none;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        
+        .tab.active {
+            background: #fbbf24;
+            color: #1a202c;
+        }
+        
+        .tab:hover {
+            background: #fbbf24;
+            color: #1a202c;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .request-card {
+            background: #1a202c;
+            border: 2px solid #4a5568;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            transition: all 0.3s;
+        }
+        
+        .request-card:hover {
+            border-color: #fbbf24;
+            transform: translateY(-2px);
+        }
+        
+        .request-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .request-id {
+            background: #fbbf24;
+            color: #2d3748;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .request-status {
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-pending {
+            background: #ed8936;
+            color: white;
+        }
+        
+        .status-approved {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .status-rejected {
+            background: #e53e3e;
+            color: white;
+        }
+        
+        .request-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .detail-item {
+            background: #2d3748;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        
+        .detail-label {
+            color: #a0aec0;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            color: white;
+            font-weight: bold;
+        }
+        
+        .request-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .action-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .approve-btn {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .reject-btn {
+            background: #e53e3e;
+            color: white;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .no-requests {
+            text-align: center;
+            color: #a0aec0;
+            font-style: italic;
+            padding: 40px;
+        }
+        
+        .user-management-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        .add-balance-form {
+            background: #2d3748;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        
+        .add-balance-form h3 {
+            color: #fbbf24;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #fbbf24;
+            font-weight: bold;
+        }
+        
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #4a5568;
+            border-radius: 8px;
+            background: #1a202c;
+            color: white;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #fbbf24;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(72, 187, 120, 0.4);
+        }
+        
+        .user-balances {
+            background: #2d3748;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        
+        .user-balances h3 {
+            color: #fbbf24;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .user-balance-card {
+            background: #1a202c;
+            border: 2px solid #4a5568;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            transition: all 0.3s;
+        }
+        
+        .user-balance-card:hover {
+            border-color: #fbbf24;
+            transform: translateY(-2px);
+        }
+        
+        .user-balance-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .user-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #fbbf24;
+        }
+        
+        .user-balance {
+            font-size: 24px;
+            font-weight: bold;
+            color: #48bb78;
+        }
+        
+        .user-email {
+            color: #a0aec0;
+            font-size: 14px;
+            margin-top: 10px;
+            padding: 8px;
+            background: #2d3748;
+            border-radius: 6px;
+        }
+        
+        .success-message {
+            background: #48bb78;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .error-message {
+            background: #e53e3e;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .filter-select {
+            padding: 8px 12px;
+            border: 2px solid #4a5568;
+            border-radius: 6px;
+            background: #1a202c;
+            color: white;
+        }
+        
+        .search-input {
+            padding: 8px 12px;
+            border: 2px solid #4a5568;
+            border-radius: 6px;
+            background: #1a202c;
+            color: white;
+            min-width: 200px;
+        }
+        
+        /* Contact Messages Styling */
+        .contact-messages-section {
+            background: #2d3748;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        
+        .contact-filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .contact-message-card {
+            background: #1a202c;
+            border: 2px solid #4a5568;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            transition: all 0.3s;
+        }
+        
+        .contact-message-card:hover {
+            border-color: #fbbf24;
+            transform: translateY(-2px);
+        }
+        
+        .contact-message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .contact-info {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .contact-name, .contact-email, .contact-subject, .contact-date {
+            color: #e2e8f0;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .contact-name {
+            font-weight: bold;
+            color: #fbbf24;
+            font-size: 16px;
+        }
+        
+        .contact-status {
+            min-width: 150px;
+        }
+        
+        .status-select {
+            padding: 8px 12px;
+            border: 2px solid #4a5568;
+            border-radius: 6px;
+            background: #1a202c;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .status-select:focus {
+            outline: none;
+            border-color: #fbbf24;
+        }
+        
+        .contact-message-content {
+            margin-bottom: 20px;
+        }
+        
+        .message-text {
+            color: #e2e8f0;
+            line-height: 1.6;
+            background: #2d3748;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #fbbf24;
+        }
+        
+        .contact-message-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .reply-btn {
+            background: linear-gradient(135deg, #38b2ac, #319795);
+            color: white;
+        }
+        
+        .resolve-btn {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .contact-message-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .contact-filters {
+                flex-direction: column;
+            }
+            
+            .contact-message-actions {
+                justify-content: center;
+            }
+        }
+        
+        /* Notifications Styling */
+        .notifications-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        .send-notification-form {
+            background: #2d3748;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        
+        .send-notification-form h3 {
+            color: #fbbf24;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .notification-history {
+            background: #2d3748;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        
+        .notification-history h3 {
+            color: #fbbf24;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .notification-filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .notification-card {
+            background: #1a202c;
+            border: 2px solid #4a5568;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            transition: all 0.3s;
+        }
+        
+        .notification-card:hover {
+            border-color: #fbbf24;
+            transform: translateY(-2px);
+        }
+        
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .notification-info {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .notification-type, .notification-priority, .notification-date, .notification-recipients {
+            color: #e2e8f0;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .notification-title {
+            font-weight: bold;
+            color: #fbbf24;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        
+        .notification-message {
+            color: #e2e8f0;
+            line-height: 1.6;
+            background: #2d3748;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #fbbf24;
+            margin-bottom: 15px;
+        }
+        
+        .notification-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .delete-btn {
+            background: linear-gradient(135deg, #e53e3e, #c53030);
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .delete-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        .priority-low { border-left-color: #48bb78; }
+        .priority-normal { border-left-color: #fbbf24; }
+        .priority-high { border-left-color: #ed8936; }
+        .priority-urgent { border-left-color: #e53e3e; }
+        
+        @media (max-width: 768px) {
+            .notifications-section {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .notification-filters {
+                flex-direction: column;
+            }
+            
+            .notification-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+        
+        /* Database Management Styles */
+        .database-overview {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .database-status-card, .database-stats-card {
+            background: #2d3748;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 2px solid #4a5568;
+        }
+        
+        .database-status-card h3, .database-stats-card h3 {
+            color: #fbbf24;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 2px solid #4a5568;
+            padding-bottom: 10px;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #1a202c;
+            border-radius: 10px;
+            border: 2px solid #4a5568;
+        }
+        
+        .status-dot {
+            font-size: 24px;
+        }
+        
+        .status-dot.connected { color: #48bb78; }
+        .status-dot.disconnected { color: #e53e3e; }
+        .status-dot.checking { color: #fbbf24; }
+        
+        .database-actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .setup-btn {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+        }
+        
+        .refresh-btn {
+            background: linear-gradient(135deg, #38b2ac, #319795);
+        }
+        
+        .test-btn {
+            background: linear-gradient(135deg, #ed8936, #dd6b20);
+        }
+        
+        .debug-btn {
+            background: linear-gradient(135deg, #9f7aea, #805ad5);
+        }
+        
+        .check-btn {
+            background: linear-gradient(135deg, #f56565, #e53e3e);
+        }
+        
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin: 10px 0;
+            background: #1a202c;
+            border-radius: 8px;
+            border: 2px solid #4a5568;
+        }
+        
+        .stat-label {
+            color: #a0aec0;
+            font-weight: bold;
+        }
+        
+        .stat-value {
+            color: #fbbf24;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .database-tools {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .tool-section {
+            background: #2d3748;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 2px solid #4a5568;
+        }
+        
+        .tool-section h3 {
+            color: #fbbf24;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 2px solid #4a5568;
+            padding-bottom: 10px;
+        }
+        
+        .tool-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .tool-btn {
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #4a5568, #2d3748);
+            color: white;
+            border: 2px solid #4a5568;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .tool-btn:hover {
+            background: linear-gradient(135deg, #fbbf24, #ed8936);
+            color: #1a202c;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(251, 191, 36, 0.4);
+        }
+        
+        .database-monitoring {
+            background: #2d3748;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 2px solid #4a5568;
+        }
+        
+        .database-monitoring h3 {
+            color: #fbbf24;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 2px solid #4a5568;
+            padding-bottom: 10px;
+        }
+        
+        .monitoring-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .monitor-card {
+            background: #1a202c;
+            border: 2px solid #4a5568;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .monitor-card:hover {
+            border-color: #fbbf24;
+            transform: translateY(-2px);
+        }
+        
+        .monitor-card h4 {
+            color: #a0aec0;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .monitor-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #fbbf24;
+            margin-bottom: 10px;
+        }
+        
+        .monitor-trend {
+            color: #718096;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .database-overview, .database-tools {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .tool-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .monitoring-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">🎰 MyCasino Admin</div>
+        <ul class="nav-links">
+            <li><a href="welcome.html">Back to Site</a></li>
+            <li><a href="#dashboard">Dashboard</a></li>
+            <li><a href="#requests">Requests</a></li>
+            <li><button class="logout-btn" onclick="adminLogout()">🔓 Logout</button></li>
+        </ul>
+    </nav>
+
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1>🔧 Admin Dashboard</h1>
+            <p>Manage all deposit and withdrawal requests</p>
+            <div style="margin-top:10px;">
+                <a href="backup.html" class="back-btn">🗄️ Backup / Restore</a>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalDeposits">0</div>
+                <div class="stat-label">Total Deposits</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalWithdrawals">0</div>
+                <div class="stat-label">Total Withdrawals</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="pendingRequests">0</div>
+                <div class="stat-label">Pending Requests</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalAmount">$0</div>
+                <div class="stat-label">Total Amount</div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('deposits')">Deposits</button>
+            <button class="tab" onclick="showTab('withdrawals')">Withdrawals</button>
+            <button class="tab" onclick="showTab('all')">All Requests</button>
+            <button class="tab" onclick="showTab('users')">User Management</button>
+            <button class="tab" onclick="showTab('database')">🗄️ Database</button>
+            <button class="tab" onclick="showTab('contact')">Contact Messages</button>
+            <button class="tab" onclick="showTab('notifications')">Notifications</button>
+        </div>
+
+        <div class="filters">
+            <select class="filter-select" id="statusFilter" onchange="filterRequests()">
+                <option value="">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+            </select>
+            <input type="text" class="search-input" id="searchInput" placeholder="Search by ID or email..." onkeyup="filterRequests()">
+        </div>
+
+        <div id="deposits" class="tab-content active">
+            <h2>Deposit Requests</h2>
+            <div id="depositsList">
+                <!-- Deposit requests will be loaded here -->
+            </div>
+        </div>
+
+        <div id="withdrawals" class="tab-content">
+            <h2>Withdrawal Requests</h2>
+            <div id="withdrawalsList">
+                <!-- Withdrawal requests will be loaded here -->
+            </div>
+        </div>
+
+        <div id="all" class="tab-content">
+            <h2>All Requests</h2>
+            <div id="allRequestsList">
+                <!-- All requests will be loaded here -->
+            </div>
+        </div>
+
+        <div id="users" class="tab-content">
+            <h2>User Management</h2>
+            <div class="user-management-section">
+                <div class="add-balance-form">
+                    <h3>Add Balance to User</h3>
+                    <form id="addBalanceForm">
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" name="username" required placeholder="Enter username">
+                        </div>
+                        <div class="form-group">
+                            <label for="amount">Amount ($)</label>
+                            <input type="number" id="amount" name="amount" min="1" max="10000" required placeholder="Enter amount">
+                        </div>
+                        <div class="form-group">
+                            <label for="reason">Reason (Optional)</label>
+                            <textarea id="reason" name="reason" rows="3" placeholder="Reason for adding balance..."></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn">Add Balance</button>
+                    </form>
+                </div>
+                
+                <div class="user-balances">
+                    <h3>User Balances</h3>
+                    <div id="userBalancesList">
+                        <!-- User balances will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="database" class="tab-content">
+            <h2>🗄️ Database Management</h2>
+            
+            <div class="database-overview">
+                <div class="database-status-card">
+                    <h3>Database Status</h3>
+                    <div id="databaseStatus">
+                        <div class="status-indicator">
+                            <span class="status-dot" id="dbStatusDot">⚪</span>
+                            <span id="dbStatusText">Checking connection...</span>
+                        </div>
+                    </div>
+                    <div class="database-actions">
+                        <button class="action-btn setup-btn" onclick="setupDatabase()">🔧 Setup Database</button>
+                        <button class="action-btn refresh-btn" onclick="refreshDatabaseStatus()">🔄 Refresh Status</button>
+                        <button class="action-btn test-btn" onclick="testDatabaseConnection()">🧪 Test Connection</button>
+                        <button class="action-btn debug-btn" onclick="debugDatabase()">🐛 Debug Info</button>
+                        <button class="action-btn check-btn" onclick="checkDatabaseSetup()">🔍 Check Setup</button>
+                    </div>
+                </div>
+                
+                <div class="database-stats-card">
+                    <h3>Database Statistics</h3>
+                    <div id="databaseStats">
+                        <div class="stat-row">
+                            <span class="stat-label">Tables:</span>
+                            <span class="stat-value" id="tableCount">-</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Total Users:</span>
+                            <span class="stat-value" id="totalUserCount">-</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">VIP Users:</span>
+                            <span class="stat-value" id="vipUserCount">-</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Total Transactions:</span>
+                            <span class="stat-value" id="totalTransactionCount">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="database-tools">
+                <div class="tool-section">
+                    <h3>🔍 Database Tools</h3>
+                    <div class="tool-buttons">
+                        <button class="tool-btn" onclick="exportDatabaseData()">📤 Export Data</button>
+                        <button class="tool-btn" onclick="backupDatabase()">💾 Backup Database</button>
+                        <button class="tool-btn" onclick="resetDatabase()">🔄 Reset Database</button>
+                        <button class="tool-btn" onclick="viewDatabaseLogs()">📋 View Logs</button>
+                        <button class="tool-btn" onclick="fixUserBalances()">💰 Fix Balances</button>
+                        <button class="tool-btn" onclick="resetAllBalances()">🔄 Reset All Balances</button>
+                    </div>
+                </div>
+                
+                <div class="tool-section">
+                    <h3>📊 Quick Reports</h3>
+                    <div class="tool-buttons">
+                        <button class="tool-btn" onclick="generateUserReport()">👥 User Report</button>
+                        <button class="tool-btn" onclick="generateVIPReport()">👑 VIP Report</button>
+                        <button class="tool-btn" onclick="generateFinancialReport()">💰 Financial Report</button>
+                        <button class="tool-btn" onclick="generateGameReport()">🎮 Game Report</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="database-monitoring">
+                <h3>📈 Real-time Monitoring</h3>
+                <div class="monitoring-grid">
+                    <div class="monitor-card">
+                        <h4>Active Users</h4>
+                        <div class="monitor-value" id="activeUsersCount">-</div>
+                        <div class="monitor-trend">Last 24 hours</div>
+                    </div>
+                    <div class="monitor-card">
+                        <h4>New Registrations</h4>
+                        <div class="monitor-value" id="newRegistrationsCount">-</div>
+                        <div class="monitor-trend">Today</div>
+                    </div>
+                    <div class="monitor-card">
+                        <h4>Total Wagered</h4>
+                        <div class="monitor-value" id="totalWageredAmount">-</div>
+                        <div class="monitor-trend">This month</div>
+                    </div>
+                    <div class="monitor-card">
+                        <h4>System Health</h4>
+                        <div class="monitor-value" id="systemHealthStatus">-</div>
+                        <div class="monitor-trend">Real-time</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="contact" class="tab-content">
+            <h2>Contact Messages</h2>
+            <div class="contact-messages-section">
+                <div class="contact-filters">
+                    <select class="filter-select" id="contactStatusFilter" onchange="filterContactMessages()">
+                        <option value="">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="replied">Replied</option>
+                        <option value="resolved">Resolved</option>
+                    </select>
+                    <select class="filter-select" id="contactSubjectFilter" onchange="filterContactMessages()">
+                        <option value="">All Subjects</option>
+                        <option value="general">General Inquiry</option>
+                        <option value="technical">Technical Support</option>
+                        <option value="billing">Billing Question</option>
+                        <option value="game">Game Issue</option>
+                        <option value="security">Security Concern</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div id="contactMessagesList">
+                    <!-- Contact messages will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <div id="notifications" class="tab-content">
+            <h2>📢 Send Notifications</h2>
+            <div class="notifications-section">
+                <div class="send-notification-form">
+                    <h3>Send New Notification</h3>
+                    <form id="notificationForm">
+                        <div class="form-group">
+                            <label for="notificationType">Notification Type</label>
+                            <select id="notificationType" name="notificationType" required>
+                                <option value="">Select notification type</option>
+                                <option value="announcement">📢 Announcement</option>
+                                <option value="maintenance">🔧 Maintenance</option>
+                                <option value="promotion">🎁 Promotion</option>
+                                <option value="security">🔒 Security Alert</option>
+                                <option value="update">🆕 Update</option>
+                                <option value="other">📝 Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="notificationTitle">Title</label>
+                            <input type="text" id="notificationTitle" name="notificationTitle" required placeholder="Enter notification title">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="notificationMessage">Message</label>
+                            <textarea id="notificationMessage" name="notificationMessage" rows="4" required placeholder="Enter notification message..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="notificationRecipients">Recipients</label>
+                            <select id="notificationRecipients" name="notificationRecipients" required>
+                                <option value="">Select recipients</option>
+                                <option value="all">👥 All Users</option>
+                                <option value="specific">👤 Specific User</option>
+                                <option value="deposit_pending">💰 Users with Pending Deposits</option>
+                                <option value="withdraw_pending">💸 Users with Pending Withdrawals</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" id="specificUserGroup" style="display: none;">
+                            <label for="specificUsername">Username</label>
+                            <input type="text" id="specificUsername" name="specificUsername" placeholder="Enter username">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="notificationPriority">Priority</label>
+                            <select id="notificationPriority" name="notificationPriority" required>
+                                <option value="low">🟢 Low</option>
+                                <option value="normal" selected>🟡 Normal</option>
+                                <option value="high">🟠 High</option>
+                                <option value="urgent">🔴 Urgent</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="submit-btn">📤 Send Notification</button>
+                    </form>
+                </div>
+                
+                <div class="notification-history">
+                    <h3>📋 Notification History</h3>
+                    <div class="notification-filters">
+                        <select class="filter-select" id="notificationTypeFilter" onchange="filterNotifications()">
+                            <option value="">All Types</option>
+                            <option value="announcement">📢 Announcement</option>
+                            <option value="maintenance">🔧 Maintenance</option>
+                            <option value="promotion">🎁 Promotion</option>
+                            <option value="security">🔒 Security Alert</option>
+                            <option value="update">🆕 Update</option>
+                            <option value="other">📝 Other</option>
+                        </select>
+                        <select class="filter-select" id="notificationPriorityFilter" onchange="filterNotifications()">
+                            <option value="">All Priorities</option>
+                            <option value="low">🟢 Low</option>
+                            <option value="normal">🟡 Normal</option>
+                            <option value="high">🟠 High</option>
+                            <option value="urgent">🔴 Urgent</option>
+                        </select>
+                    </div>
+                    <div id="notificationsList">
+                        <!-- Notifications will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin-database.js"></script>
+    <script>
+        // Create local adminDB instance if not available
+        console.log('Checking adminDB availability...');
+        if (typeof adminDB === 'undefined') {
+            console.log('adminDB not found, creating local implementation...');
+            // Simple local admin database implementation
+            const localAdminDB = {
+                async addUserBalance(userId, amount, reason = '') {
+                    console.log('Local addUserBalance called with:', userId, amount, reason);
+                    const uid = Number(userId);
+                    const amt = Number(amount);
+                    if (!uid || !Number.isFinite(amt) || amt <= 0) throw new Error('Amount must be greater than 0');
+                    
+                    // Update demo_wallets
+                    const wallets = JSON.parse(localStorage.getItem('demo_wallets') || '{}');
+                    const now = new Date().toISOString();
+                    const w = wallets[uid] || { balance: 0, bonus_balance: 0, locked_balance: 0, total_deposited: 0, total_withdrawn: 0, updated_at: now };
+                    const before = Number(w.balance || 0);
+                    w.balance = before + amt;
+                    w.total_deposited = Number(w.total_deposited || 0) + amt;
+                    w.updated_at = now;
+                    wallets[uid] = w;
+                    localStorage.setItem('demo_wallets', JSON.stringify(wallets));
+
+                    // Also sync per-user balance key used by user pages: balance:<username>
+                    const users = JSON.parse(localStorage.getItem('demo_users') || '[]');
+                    const u = users.find(x => Number(x.id) === uid);
+                    if (u && u.username) {
+                        const balanceKey = `balance:${String(u.username)}`;
+                        localStorage.setItem(balanceKey, String(w.balance));
+                        // Broadcast sync event for open tabs
+                        try {
+                            localStorage.setItem('balance_sync', JSON.stringify({ username: String(u.username), balance: Number(w.balance), ts: Date.now() }));
+                        } catch(_) { /* ignore */ }
+                    }
+
+                    console.log('Balance added successfully for user', uid, 'new balance:', w.balance);
+                    return { success: true, message: 'Balance added successfully' };
+                }
+            };
+            window.adminDB = localAdminDB;
+            console.log('Local adminDB created and assigned to window.adminDB');
+        } else {
+            console.log('adminDB found:', adminDB);
+        }
+        
+        // Admin authentication check
+        function checkAdminAuth() {
+            const adminLoggedIn = sessionStorage.getItem('adminLoggedIn');
+            const adminLoginTime = sessionStorage.getItem('adminLoginTime');
+            
+            if (adminLoggedIn !== 'true') {
+                window.location.href = 'admin-login.html';
+                return false;
+            }
+            
+            // Check if login is older than 24 hours (optional security)
+            if (adminLoginTime) {
+                const loginTime = new Date(adminLoginTime);
+                const currentTime = new Date();
+                const hoursDiff = (currentTime - loginTime) / (1000 * 60 * 60);
+                
+                if (hoursDiff > 24) {
+                    sessionStorage.removeItem('adminLoggedIn');
+                    sessionStorage.removeItem('adminLoginTime');
+                    window.location.href = 'admin-login.html';
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        
+        // Check authentication on page load
+        if (!checkAdminAuth()) {
+            // Page will redirect, so we don't need to continue
+            throw new Error('Authentication failed');
+        }
+        
+        let allDepositRequests = [];
+        let allWithdrawRequests = [];
+        let currentTab = 'deposits';
+
+        function showTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+            
+            currentTab = tabName;
+            displayRequests();
+            
+            // Load user balances if users tab is selected
+            if (tabName === 'users') {
+                loadUserBalances();
+            }
+            
+            // Load contact messages if contact tab is selected
+            if (tabName === 'contact') {
+                loadContactMessages();
+            }
+            
+            // Load notifications if notifications tab is selected
+            if (tabName === 'notifications') {
+                loadNotifications();
+            }
+        }
+
+        function loadAllRequests() {
+            // Load all deposit requests from localStorage
+            const depositRequests = JSON.parse(localStorage.getItem('depositRequests') || '[]');
+            allDepositRequests = depositRequests;
+            
+            // Load all withdrawal requests from localStorage
+            const withdrawRequests = JSON.parse(localStorage.getItem('withdrawRequests') || '[]');
+            allWithdrawRequests = withdrawRequests;
+            
+            updateStats();
+        }
+
+        function updateStats() {
+            const totalDeposits = allDepositRequests.length;
+            const totalWithdrawals = allWithdrawRequests.length;
+            const pendingRequests = allDepositRequests.filter(r => r.status === 'pending').length + 
+                                  allWithdrawRequests.filter(r => r.status === 'pending').length;
+            
+            const totalAmount = allDepositRequests.reduce((sum, r) => sum + parseInt(r.amount), 0) +
+                              allWithdrawRequests.reduce((sum, r) => sum + parseInt(r.amount), 0);
+            
+            document.getElementById('totalDeposits').textContent = totalDeposits;
+            document.getElementById('totalWithdrawals').textContent = totalWithdrawals;
+            document.getElementById('pendingRequests').textContent = pendingRequests;
+            document.getElementById('totalAmount').textContent = `$${totalAmount.toLocaleString()}`;
+        }
+
+        function displayRequests() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            let requestsToShow = [];
+            
+            if (currentTab === 'deposits') {
+                requestsToShow = allDepositRequests.map(r => ({...r, type: 'deposit'}));
+            } else if (currentTab === 'withdrawals') {
+                requestsToShow = allWithdrawRequests.map(r => ({...r, type: 'withdrawal'}));
+            } else {
+                requestsToShow = [
+                    ...allDepositRequests.map(r => ({...r, type: 'deposit'})),
+                    ...allWithdrawRequests.map(r => ({...r, type: 'withdrawal'}))
+                ];
+            }
+            
+            // Apply filters
+            if (statusFilter) {
+                requestsToShow = requestsToShow.filter(r => r.status === statusFilter);
+            }
+            
+            if (searchTerm) {
+                requestsToShow = requestsToShow.filter(r => 
+                    r.id.toLowerCase().includes(searchTerm) ||
+                    r.email.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            // Sort by timestamp (newest first)
+            requestsToShow.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            const containerId = currentTab === 'deposits' ? 'depositsList' : 
+                              currentTab === 'withdrawals' ? 'withdrawalsList' : 'allRequestsList';
+            
+            const container = document.getElementById(containerId);
+            
+            if (requestsToShow.length === 0) {
+                container.innerHTML = '<div class="no-requests">No requests found.</div>';
+                return;
+            }
+            
+            container.innerHTML = requestsToShow.map(request => `
+                <div class="request-card">
+                    <div class="request-header">
+                        <span class="request-id">${request.id} (${request.type.toUpperCase()})</span>
+                        <span class="request-status status-${request.status}">${request.status.toUpperCase()}</span>
+                    </div>
+                    <div class="request-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Amount</div>
+                            <div class="detail-value">$${request.amount}</div>
+                        </div>
+
+                        <div class="detail-item">
+                            <div class="detail-label">Email</div>
+                            <div class="detail-value">${request.email}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Date</div>
+                            <div class="detail-value">${new Date(request.timestamp).toLocaleDateString()}</div>
+                        </div>
+
+                    </div>
+                    ${request.notes ? `
+                        <div class="detail-item">
+                            <div class="detail-label">Notes</div>
+                            <div class="detail-value">${request.notes}</div>
+                        </div>
+                    ` : ''}
+                    ${request.status === 'pending' ? `
+                        <div class="request-actions">
+                            <button class="action-btn approve-btn" onclick="approveRequest('${request.id}', '${request.type}')">Approve</button>
+                            <button class="action-btn reject-btn" onclick="rejectRequest('${request.id}', '${request.type}')">Reject</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function approveRequest(requestId, type) {
+            if (type === 'deposit') {
+                const request = allDepositRequests.find(r => r.id === requestId);
+                if (request) {
+                    request.status = 'approved';
+                    request.processedAt = new Date().toISOString();
+                    localStorage.setItem('depositRequests', JSON.stringify(allDepositRequests));
+                }
+            } else {
+                const request = allWithdrawRequests.find(r => r.id === requestId);
+                if (request) {
+                    request.status = 'approved';
+                    request.processedAt = new Date().toISOString();
+                    localStorage.setItem('withdrawRequests', JSON.stringify(allWithdrawRequests));
+                }
+            }
+            
+            loadAllRequests();
+            displayRequests();
+            showMessage('Request approved successfully!', 'success');
+        }
+
+        function rejectRequest(requestId, type) {
+            if (type === 'deposit') {
+                const request = allDepositRequests.find(r => r.id === requestId);
+                if (request) {
+                    request.status = 'rejected';
+                    request.processedAt = new Date().toISOString();
+                    localStorage.setItem('depositRequests', JSON.stringify(allDepositRequests));
+                }
+            } else {
+                const request = allWithdrawRequests.find(r => r.id === requestId);
+                if (request) {
+                    request.status = 'rejected';
+                    request.processedAt = new Date().toISOString();
+                    localStorage.setItem('withdrawRequests', JSON.stringify(allWithdrawRequests));
+                }
+            }
+            
+            loadAllRequests();
+            displayRequests();
+            showMessage('Request rejected.', 'error');
+        }
+
+        function filterRequests() {
+            displayRequests();
+        }
+
+        function showMessage(message, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = type === 'success' ? 'success-message' : 'error-message';
+            messageDiv.textContent = message;
+            
+            const container = document.querySelector('.admin-container');
+            container.insertBefore(messageDiv, container.firstChild);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 5000);
+        }
+        
+        function adminLogout() {
+            sessionStorage.removeItem('adminLoggedIn');
+            sessionStorage.removeItem('adminLoginTime');
+            window.location.href = 'admin-login.html';
+        }
+
+        // Session timeout warning (optional)
+        function checkSessionTimeout() {
+            const adminLoginTime = sessionStorage.getItem('adminLoginTime');
+            if (adminLoginTime) {
+                const loginTime = new Date(adminLoginTime);
+                const currentTime = new Date();
+                const hoursDiff = (currentTime - loginTime) / (1000 * 60 * 60);
+                
+                if (hoursDiff > 23) { // Warn 1 hour before timeout
+                    showMessage('Warning: Your admin session will expire in less than 1 hour. Please save your work.', 'error');
+                }
+            }
+        }
+        
+        // Check session timeout every 30 minutes
+        setInterval(checkSessionTimeout, 30 * 60 * 1000);
+        
+        // User Management Functions
+        function loadUserBalances() {
+            const userBalancesList = document.getElementById('userBalancesList');
+            
+            // Get all users from localStorage (this is a simplified approach)
+            // In a real application, you'd have a proper user database
+            let balance = localStorage.getItem('balance') || '0';
+            let balanceNum = parseInt(balance);
+            if (isNaN(balanceNum)) {
+                balanceNum = 0;
+                const uname = (localStorage.getItem('username') || 'Player').toString();
+                localStorage.setItem(`balance:${uname}`, balanceNum.toString());
+            }
+            
+            const users = [
+                { 
+                    username: localStorage.getItem('username') || 'Player', 
+                    email: localStorage.getItem('email') || 'No email',
+                    balance: balanceNum 
+                }
+            ];
+            
+            if (users.length === 0) {
+                userBalancesList.innerHTML = '<div class="no-requests">No users found.</div>';
+                return;
+            }
+            
+            userBalancesList.innerHTML = users.map(user => `
+                <div class="user-balance-card">
+                    <div class="user-balance-header">
+                        <div class="user-name">${user.username}</div>
+                        <div class="user-balance">$${user.balance}</div>
+                    </div>
+                    <div class="user-email">📧 ${user.email}</div>
+                </div>
+            `).join('');
+        }
+        
+        async function addBalanceToUser(username, amount, reason) {
+            try {
+                console.log('addBalanceToUser called with:', username, amount, reason);
+                console.log('adminDB type:', typeof adminDB);
+                console.log('adminDB value:', adminDB);
+                
+                // Check if adminDB is available
+                if (typeof adminDB === 'undefined') {
+                    console.error('adminDB is undefined');
+                    showMessage('Admin database not loaded. Please refresh the page.', 'error');
+                    return;
+                }
+                
+                if (!adminDB.addUserBalance) {
+                    console.error('adminDB.addUserBalance is not available');
+                    showMessage('Admin database method not available. Please refresh the page.', 'error');
+                    return;
+                }
+                
+                // Find user by username
+                const users = JSON.parse(localStorage.getItem('demo_users') || '[]');
+                const user = users.find(u => String(u.username).toLowerCase() === String(username).toLowerCase());
+                
+                if (!user) {
+                    showMessage(`User "${username}" not found.`, 'error');
+                    return;
+                }
+                
+                // Use admin database to add balance
+                if (typeof adminDB !== 'undefined' && adminDB.addUserBalance) {
+                    await adminDB.addUserBalance(user.id, parseFloat(amount), reason);
+                } else {
+                    // Fallback: direct localStorage update
+                    const balanceKey = `balance:${user.username}`;
+                    const currentBalance = parseFloat(localStorage.getItem(balanceKey) || '0');
+                    const newBalance = currentBalance + parseFloat(amount);
+                    localStorage.setItem(balanceKey, newBalance.toString());
+                    
+                    // Also update demo_wallets for consistency
+                    const wallets = JSON.parse(localStorage.getItem('demo_wallets') || '{}');
+                    if (!wallets[user.id]) wallets[user.id] = { balance: 0 };
+                    wallets[user.id].balance = newBalance;
+                    localStorage.setItem('demo_wallets', JSON.stringify(wallets));
+                    
+                    // Broadcast sync event
+                    try {
+                        localStorage.setItem('balance_sync', JSON.stringify({ 
+                            username: user.username, 
+                            balance: newBalance, 
+                            ts: Date.now() 
+                        }));
+                    } catch(_) {}
+                }
+                
+                // Log the admin action
+                const adminActions = JSON.parse(localStorage.getItem('adminActions') || '[]');
+                adminActions.push({
+                    action: 'add_balance',
+                    username: username,
+                    email: user.email,
+                    amount: amount,
+                    reason: reason,
+                    timestamp: new Date().toISOString(),
+                    admin: 'admin'
+                });
+                localStorage.setItem('adminActions', JSON.stringify(adminActions));
+                
+                showMessage(`Successfully added $${amount} to ${username}'s balance!`, 'success');
+                loadUserBalances();
+                loadAllUsers(1); // Refresh the all users table
+            } catch (error) {
+                console.error('Failed to add balance:', error);
+                showMessage(`Failed to add balance: ${error.message}`, 'error');
+            }
+        }
+        
+        // Handle add balance form submission
+        document.getElementById('addBalanceForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const username = formData.get('username');
+            const amount = formData.get('amount');
+            const reason = formData.get('reason');
+            
+            if (!username || !amount) {
+                showMessage('Please fill in all required fields.', 'error');
+                return;
+            }
+            
+            if (parseInt(amount) <= 0) {
+                showMessage('Amount must be greater than 0.', 'error');
+                return;
+            }
+            
+            await addBalanceToUser(username, amount, reason);
+            e.target.reset();
+        });
+        
+        // Contact Message Functions
+        function loadContactMessages() {
+            const contactMessagesList = document.getElementById('contactMessagesList');
+            const contactMessages = JSON.parse(localStorage.getItem('contactMessages') || '[]');
+            
+            if (contactMessages.length === 0) {
+                contactMessagesList.innerHTML = '<div class="no-requests">No contact messages found.</div>';
+                return;
+            }
+            
+            contactMessagesList.innerHTML = contactMessages.map((message, index) => `
+                <div class="contact-message-card">
+                    <div class="contact-message-header">
+                        <div class="contact-info">
+                            <div class="contact-name">👤 ${message.name}</div>
+                            <div class="contact-email">📧 ${message.email}</div>
+                            <div class="contact-subject">📋 ${message.subject}</div>
+                            <div class="contact-date">📅 ${message.date}</div>
+                        </div>
+                        <div class="contact-status">
+                            <select class="status-select" onchange="updateContactStatus(${index}, this.value)">
+                                <option value="pending" ${message.status === 'pending' ? 'selected' : ''}>⏳ Pending</option>
+                                <option value="replied" ${message.status === 'replied' ? 'selected' : ''}>💬 Replied</option>
+                                <option value="resolved" ${message.status === 'resolved' ? 'selected' : ''}>✅ Resolved</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="contact-message-content">
+                        <div class="message-text">💬 ${message.message}</div>
+                    </div>
+                    <div class="contact-message-actions">
+                        <button class="action-btn reply-btn" onclick="replyToContact(${index})">💬 Reply</button>
+                        <button class="action-btn resolve-btn" onclick="resolveContact(${index})">✅ Mark Resolved</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function updateContactStatus(index, status) {
+            const contactMessages = JSON.parse(localStorage.getItem('contactMessages') || '[]');
+            if (contactMessages[index]) {
+                contactMessages[index].status = status;
+                localStorage.setItem('contactMessages', JSON.stringify(contactMessages));
+                showMessage(`Contact message status updated to ${status}`, 'success');
+            }
+        }
+        
+        function replyToContact(index) {
+            const contactMessages = JSON.parse(localStorage.getItem('contactMessages') || '[]');
+            const message = contactMessages[index];
+            if (message) {
+                const reply = prompt(`Reply to ${message.name} (${message.email}):`);
+                if (reply) {
+                    // In a real app, you'd send this reply via email
+                    // For now, we'll just update the status
+                    message.status = 'replied';
+                    localStorage.setItem('contactMessages', JSON.stringify(contactMessages));
+                    showMessage(`Reply sent to ${message.name}`, 'success');
+                    loadContactMessages();
+                }
+            }
+        }
+        
+        function resolveContact(index) {
+            const contactMessages = JSON.parse(localStorage.getItem('contactMessages') || '[]');
+            if (contactMessages[index]) {
+                contactMessages[index].status = 'resolved';
+                localStorage.setItem('contactMessages', JSON.stringify(contactMessages));
+                showMessage(`Contact message marked as resolved`, 'success');
+                loadContactMessages();
+            }
+        }
+        
+        function filterContactMessages() {
+            const statusFilter = document.getElementById('contactStatusFilter').value;
+            const subjectFilter = document.getElementById('contactSubjectFilter').value;
+            const contactMessages = JSON.parse(localStorage.getItem('contactMessages') || '[]');
+            
+            let filteredMessages = contactMessages;
+            
+            if (statusFilter) {
+                filteredMessages = filteredMessages.filter(msg => msg.status === statusFilter);
+            }
+            
+            if (subjectFilter) {
+                filteredMessages = filteredMessages.filter(msg => msg.subject === subjectFilter);
+            }
+            
+            const contactMessagesList = document.getElementById('contactMessagesList');
+            
+            if (filteredMessages.length === 0) {
+                contactMessagesList.innerHTML = '<div class="no-requests">No contact messages match the selected filters.</div>';
+                return;
+            }
+            
+            contactMessagesList.innerHTML = filteredMessages.map((message, index) => `
+                <div class="contact-message-card">
+                    <div class="contact-message-header">
+                        <div class="contact-info">
+                            <div class="contact-name">👤 ${message.name}</div>
+                            <div class="contact-email">📧 ${message.email}</div>
+                            <div class="contact-subject">📋 ${message.subject}</div>
+                            <div class="contact-date">📅 ${message.date}</div>
+                        </div>
+                        <div class="contact-status">
+                            <select class="status-select" onchange="updateContactStatus(${index}, this.value)">
+                                <option value="pending" ${message.status === 'pending' ? 'selected' : ''}>⏳ Pending</option>
+                                <option value="replied" ${message.status === 'replied' ? 'selected' : ''}>💬 Replied</option>
+                                <option value="resolved" ${message.status === 'resolved' ? 'selected' : ''}>✅ Resolved</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="contact-message-content">
+                        <div class="message-text">💬 ${message.message}</div>
+                    </div>
+                    <div class="contact-message-actions">
+                        <button class="action-btn reply-btn" onclick="replyToContact(${index})">💬 Reply</button>
+                        <button class="action-btn resolve-btn" onclick="resolveContact(${index})">✅ Mark Resolved</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Notification Functions
+        function loadNotifications() {
+            const notificationsList = document.getElementById('notificationsList');
+            const notifications = JSON.parse(localStorage.getItem('adminNotifications') || '[]');
+            
+            if (notifications.length === 0) {
+                notificationsList.innerHTML = '<div class="no-requests">No notifications sent yet.</div>';
+                return;
+            }
+            
+            notificationsList.innerHTML = notifications.map((notification, index) => `
+                <div class="notification-card priority-${notification.priority}">
+                    <div class="notification-header">
+                        <div class="notification-info">
+                            <div class="notification-title">${notification.title}</div>
+                            <div class="notification-type">📋 ${notification.type}</div>
+                            <div class="notification-priority">🎯 ${notification.priority}</div>
+                            <div class="notification-date">📅 ${new Date(notification.timestamp).toLocaleString()}</div>
+                            <div class="notification-recipients">👥 ${notification.recipients}</div>
+                        </div>
+                    </div>
+                    <div class="notification-message">💬 ${notification.message}</div>
+                    <div class="notification-actions">
+                        <button class="delete-btn" onclick="deleteNotification(${index})">🗑️ Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function sendNotification(formData) {
+            const notification = {
+                id: `NOTIF-${Date.now()}`,
+                type: formData.get('notificationType'),
+                title: formData.get('notificationTitle'),
+                message: formData.get('notificationMessage'),
+                recipients: formData.get('notificationRecipients'),
+                specificUsername: formData.get('specificUsername') || '',
+                priority: formData.get('notificationPriority'),
+                timestamp: new Date().toISOString(),
+                admin: 'admin'
+            };
+            
+            // Store admin notification
+            const adminNotifications = JSON.parse(localStorage.getItem('adminNotifications') || '[]');
+            adminNotifications.push(notification);
+            localStorage.setItem('adminNotifications', JSON.stringify(adminNotifications));
+            
+            // Send to users based on recipient type
+            const userNotifications = JSON.parse(localStorage.getItem('notifications') || '{}');
+            
+            switch (notification.recipients) {
+                case 'all':
+                    // Get all users (simplified - in real app you'd have a user database)
+                    const currentUser = localStorage.getItem('username');
+                    if (currentUser) {
+                        if (!userNotifications[currentUser]) userNotifications[currentUser] = [];
+                        userNotifications[currentUser].push({
+                            ...notification,
+                            read: false,
+                            receivedAt: new Date().toISOString()
+                        });
+                    }
+                    break;
+                    
+                case 'specific':
+                    const username = formData.get('specificUsername');
+                    if (username && username.trim()) {
+                        if (!userNotifications[username]) userNotifications[username] = [];
+                        userNotifications[username].push({
+                            ...notification,
+                            read: false,
+                            receivedAt: new Date().toISOString()
+                        });
+                    }
+                    break;
+                    
+                case 'deposit_pending':
+                    // Send to users with pending deposits
+                    const depositRequests = JSON.parse(localStorage.getItem('depositRequests') || '[]');
+                    const depositUsers = [...new Set(depositRequests.filter(req => req.status === 'pending').map(req => req.email))];
+                    depositUsers.forEach(email => {
+                        // In a real app, you'd look up username by email
+                        if (!userNotifications[email]) userNotifications[email] = [];
+                        userNotifications[email].push({
+                            ...notification,
+                            read: false,
+                            receivedAt: new Date().toISOString()
+                        });
+                    });
+                    break;
+                    
+                case 'withdraw_pending':
+                    // Send to users with pending withdrawals
+                    const withdrawRequests = JSON.parse(localStorage.getItem('withdrawRequests') || '[]');
+                    const withdrawUsers = [...new Set(withdrawRequests.filter(req => req.status === 'pending').map(req => req.email))];
+                    withdrawUsers.forEach(email => {
+                        if (!userNotifications[email]) userNotifications[email] = [];
+                        userNotifications[email].push({
+                            ...notification,
+                            read: false,
+                            receivedAt: new Date().toISOString()
+                        });
+                    });
+                    break;
+            }
+            
+            localStorage.setItem('notifications', JSON.stringify(userNotifications));
+            
+            showMessage('Notification sent successfully!', 'success');
+            loadNotifications();
+        }
+        
+        function deleteNotification(index) {
+            const notifications = JSON.parse(localStorage.getItem('adminNotifications') || '[]');
+            notifications.splice(index, 1);
+            localStorage.setItem('adminNotifications', JSON.stringify(notifications));
+            loadNotifications();
+            showMessage('Notification deleted successfully!', 'success');
+        }
+        
+        function filterNotifications() {
+            const typeFilter = document.getElementById('notificationTypeFilter').value;
+            const priorityFilter = document.getElementById('notificationPriorityFilter').value;
+            const notifications = JSON.parse(localStorage.getItem('adminNotifications') || '[]');
+            
+            let filteredNotifications = notifications;
+            
+            if (typeFilter) {
+                filteredNotifications = filteredNotifications.filter(notif => notif.type === typeFilter);
+            }
+            
+            if (priorityFilter) {
+                filteredNotifications = filteredNotifications.filter(notif => notif.priority === priorityFilter);
+            }
+            
+            const notificationsList = document.getElementById('notificationsList');
+            
+            if (filteredNotifications.length === 0) {
+                notificationsList.innerHTML = '<div class="no-requests">No notifications match the selected filters.</div>';
+                return;
+            }
+            
+            notificationsList.innerHTML = filteredNotifications.map((notification, index) => `
+                <div class="notification-card priority-${notification.priority}">
+                    <div class="notification-header">
+                        <div class="notification-info">
+                            <div class="notification-title">${notification.title}</div>
+                            <div class="notification-type">📋 ${notification.type}</div>
+                            <div class="notification-priority">🎯 ${notification.priority}</div>
+                            <div class="notification-date">📅 ${new Date(notification.timestamp).toLocaleString()}</div>
+                            <div class="notification-recipients">👥 ${notification.recipients}</div>
+                        </div>
+                    </div>
+                    <div class="notification-message">💬 ${notification.message}</div>
+                    <div class="notification-actions">
+                        <button class="delete-btn" onclick="deleteNotification(${index})">🗑️ Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Event Listeners for Notifications
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle notification form submission
+            const notificationForm = document.getElementById('notificationForm');
+            if (notificationForm) {
+                notificationForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const formData = new FormData(e.target);
+                    sendNotification(formData);
+                    e.target.reset();
+                    document.getElementById('specificUserGroup').style.display = 'none';
+                });
+            }
+            
+            // Handle recipient selection change
+            const notificationRecipients = document.getElementById('notificationRecipients');
+            if (notificationRecipients) {
+                notificationRecipients.addEventListener('change', function() {
+                    const specificUserGroup = document.getElementById('specificUserGroup');
+                    if (this.value === 'specific') {
+                        specificUserGroup.style.display = 'block';
+                    } else {
+                        specificUserGroup.style.display = 'none';
+                    }
+                });
+            }
+        });
+
+        // Initialize dashboard
+        loadAllRequests();
+        displayRequests();
+        loadUserBalances();
+        
+        // Database Management Functions
+        async function setupDatabase() {
+            try {
+                showMessage('Setting up database...', 'success');
+                
+                // Open setup page in new tab
+                window.open('setup_database.php', '_blank');
+                
+                // Refresh status after a delay
+                setTimeout(() => {
+                    refreshDatabaseStatus();
+                }, 3000);
+                
+            } catch (error) {
+                showMessage('Failed to setup database: ' + error.message, 'error');
+            }
+        }
+        
+        async function refreshDatabaseStatus() {
+            try {
+                const statusDot = document.getElementById('dbStatusDot');
+                const statusText = document.getElementById('dbStatusText');
+                
+                if (!statusDot || !statusText) {
+                    console.error('Database status elements not found');
+                    return;
+                }
+                
+                statusDot.textContent = '🔄';
+                statusDot.className = 'status-dot checking';
+                statusText.textContent = 'Checking connection...';
+                
+                // Test database connection
+                const response = await fetch('admin_api.php?action=get_stats');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        statusDot.textContent = '🟢';
+                        statusDot.className = 'status-dot connected';
+                        statusText.textContent = 'Connected to database';
+                        
+                        // Load database statistics
+                        await loadDatabaseStats();
+                        await loadMonitoringData();
+                        
+                        showMessage('✅ Database connected successfully!', 'success');
+                    } else {
+                        statusDot.textContent = '🔴';
+                        statusDot.className = 'status-dot disconnected';
+                        statusText.textContent = 'Database error: ' + (data.error || 'Unknown error');
+                    }
+                    
+                } else {
+                    statusDot.textContent = '🔴';
+                    statusDot.className = 'status-dot disconnected';
+                    statusText.textContent = 'Database connection failed (HTTP ' + response.status + ')';
+                }
+                
+            } catch (error) {
+                console.error('Database connection error:', error);
+                const statusDot = document.getElementById('dbStatusDot');
+                const statusText = document.getElementById('dbStatusText');
+                
+                if (statusDot && statusText) {
+                    statusDot.textContent = '🔴';
+                    statusDot.className = 'status-dot disconnected';
+                    statusText.textContent = 'Connection error: ' + error.message;
+                }
+                
+                showMessage('❌ Database connection failed: ' + error.message, 'error');
+            }
+        }
+        
+        async function testDatabaseConnection() {
+            try {
+                showMessage('Testing database connection...', 'success');
+                
+                console.log('Testing database connection...');
+                const response = await fetch('admin_api.php?action=get_stats');
+                
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Response data:', data);
+                    
+                    if (data.success) {
+                        showMessage('✅ Database connection successful!', 'success');
+                        
+                        // Update status
+                        await refreshDatabaseStatus();
+                        
+                    } else {
+                        showMessage('❌ Database error: ' + (data.error || 'Unknown error'), 'error');
+                    }
+                    
+                } else {
+                    const errorText = await response.text();
+                    console.error('HTTP Error Response:', errorText);
+                    showMessage('❌ Database connection failed (HTTP ' + response.status + ')', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Connection test error:', error);
+                showMessage('❌ Connection test failed: ' + error.message, 'error');
+            }
+        }
+        
+        async function loadDatabaseStats() {
+            try {
+                const response = await fetch('admin_api.php?action=get_stats');
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data.success && data.data) {
+                        const stats = data.data;
+                        
+                        // Update statistics with error checking
+                        const tableCountEl = document.getElementById('tableCount');
+                        const totalUserCountEl = document.getElementById('totalUserCount');
+                        const vipUserCountEl = document.getElementById('vipUserCount');
+                        const totalTransactionCountEl = document.getElementById('totalTransactionCount');
+                        
+                        if (tableCountEl) tableCountEl.textContent = '12'; // Fixed number of tables
+                        if (totalUserCountEl) totalUserCountEl.textContent = stats.total_users || 0;
+                        if (vipUserCountEl) vipUserCountEl.textContent = stats.vip_users || 0;
+                        if (totalTransactionCountEl) {
+                            const totalTransactions = (stats.total_deposits || 0) + (stats.total_withdrawals || 0);
+                            totalTransactionCountEl.textContent = totalTransactions;
+                        }
+                        
+                        console.log('Database stats loaded successfully:', stats);
+                    } else {
+                        console.error('Failed to load database stats:', data.error || 'No data received');
+                    }
+                } else {
+                    console.error('Failed to load database stats: HTTP ' + response.status);
+                }
+            } catch (error) {
+                console.error('Failed to load database stats:', error);
+                showMessage('❌ Failed to load database statistics: ' + error.message, 'error');
+            }
+        }
+        
+        async function loadMonitoringData() {
+            try {
+                const response = await fetch('admin_api.php?action=get_stats');
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data.success && data.data) {
+                        const stats = data.data;
+                        
+                        // Update monitoring values with error checking
+                        const activeUsersCountEl = document.getElementById('activeUsersCount');
+                        const newRegistrationsCountEl = document.getElementById('newRegistrationsCount');
+                        const totalWageredAmountEl = document.getElementById('totalWageredAmount');
+                        const systemHealthStatusEl = document.getElementById('systemHealthStatus');
+                        
+                        if (activeUsersCountEl) activeUsersCountEl.textContent = stats.total_users || 0;
+                        if (newRegistrationsCountEl) newRegistrationsCountEl.textContent = stats.today_new_users || 0;
+                        if (totalWageredAmountEl) {
+                            const totalAmount = (stats.total_deposits_amount || 0) + (stats.total_withdrawals_amount || 0);
+                            totalWageredAmountEl.textContent = '$' + totalAmount.toLocaleString();
+                        }
+                        if (systemHealthStatusEl) systemHealthStatusEl.textContent = '🟢 Healthy';
+                        
+                        console.log('Monitoring data loaded successfully:', stats);
+                    } else {
+                        console.error('Failed to load monitoring data:', data.error || 'No data received');
+                    }
+                } else {
+                    console.error('Failed to load monitoring data: HTTP ' + response.status);
+                }
+            } catch (error) {
+                console.error('Failed to load monitoring data:', error);
+                showMessage('❌ Failed to load monitoring data: ' + error.message, 'error');
+            }
+        }
+        
+        // Database Tool Functions
+        async function exportDatabaseData() {
+            try {
+                showMessage('Preparing database export...', 'success');
+                
+                // Show export options modal
+                const exportType = prompt('Enter export type (users, transactions, vip_stats, game_sessions, all):', 'all');
+                if (!exportType) return;
+                
+                const format = prompt('Enter format (json, csv, xml):', 'json');
+                if (!format) return;
+                
+                const response = await fetch('export_database.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        type: exportType,
+                        format: format
+                    })
+                });
+                
+                if (response.ok) {
+                    if (format === 'json') {
+                        const data = await response.json();
+                        showMessage('✅ Export completed! Check downloads folder.', 'success');
+                    } else {
+                        // Download file for CSV/XML
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `casino_export_${exportType}_${new Date().toISOString().split('T')[0]}.${format}`;
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(a);
+                        showMessage('✅ Export completed and downloaded!', 'success');
+                    }
+                } else {
+                    throw new Error('Export failed');
+                }
+                
+            } catch (error) {
+                console.error('Export failed:', error);
+                showMessage('❌ Export failed: ' + error.message, 'error');
+            }
+        }
+        
+        async function backupDatabase() {
+            try {
+                showMessage('Creating database backup...', 'success');
+                
+                const backupType = prompt('Enter backup type (full, structure):', 'full');
+                if (!backupType) return;
+                
+                const includeData = confirm('Include data in backup?');
+                const compress = confirm('Compress backup file?');
+                
+                const response = await fetch('backup_database.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        type: backupType,
+                        include_data: includeData,
+                        compress: compress
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    showMessage(`✅ Backup created: ${data.backup_info.filename} (${data.backup_info.size})`, 'success');
+                    
+                    // Refresh database status
+                    refreshDatabaseStatus();
+                } else {
+                    throw new Error('Backup failed');
+                }
+                
+            } catch (error) {
+                console.error('Backup failed:', error);
+                showMessage('❌ Backup failed: ' + error.message, 'error');
+            }
+        }
+        
+        function resetDatabase() {
+            if (confirm('⚠️ Are you sure you want to reset the database? This will delete all data!')) {
+                if (confirm('⚠️ FINAL WARNING: This will permanently delete ALL data! Continue?')) {
+                    showMessage('🔄 Database reset initiated...', 'success');
+                    // This would typically redirect to a reset script
+                    window.open('setup_database.php?reset=1', '_blank');
+                }
+            }
+        }
+        
+        function viewDatabaseLogs() {
+            showMessage('Opening database logs viewer...', 'success');
+            window.open('view_database_logs.php', '_blank');
+        }
+        
+        // Report Generation Functions
+        async function generateUserReport() {
+            try {
+                showMessage('Generating user report...', 'success');
+                
+                const format = prompt('Enter format (json, csv, xml):', 'json');
+                if (!format) return;
+                
+                const dateFrom = prompt('Enter start date (YYYY-MM-DD) or leave empty:', '');
+                const dateTo = prompt('Enter end date (YYYY-MM-DD) or leave empty:', '');
+                
+                const response = await fetch('generate_reports.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        type: 'user',
+                        format: format,
+                        date_from: dateFrom,
+                        date_to: dateTo
+                    })
+                });
+                
+                if (response.ok) {
+                    if (format === 'json') {
+                        const data = await response.json();
+                        showMessage('✅ User report generated! Check downloads folder.', 'success');
+                    } else {
+                        // Download file for CSV/XML
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `casino_report_user_${new Date().toISOString().split('T')[0]}.${format}`;
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(a);
+                        showMessage('✅ User report generated and downloaded!', 'success');
+                    }
+                } else {
+                    throw new Error('Report generation failed');
+                }
+                
+            } catch (error) {
+                console.error('User report generation failed:', error);
+                showMessage('❌ User report generation failed: ' + error.message, 'error');
+            }
+        }
+        
+        async function generateVIPReport() {
+            try {
+                showMessage('Generating VIP report...', 'success');
+                
+                const format = prompt('Enter format (json, csv, xml):', 'json');
+                if (!format) return;
+                
+                const dateFrom = prompt('Enter start date (YYYY-MM-DD) or leave empty:', '');
+                const dateTo = prompt('Enter end date (YYYY-MM-DD) or leave empty:', '');
+                
+                const response = await fetch('generate_reports.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        type: 'vip',
+                        format: format,
+                        date_from: dateFrom,
+                        date_to: dateTo
+                    })
+                });
+                
+                if (response.ok) {
+                    if (format === 'json') {
+                        const data = await response.json();
+                        showMessage('✅ VIP report generated! Check downloads folder.', 'success');
+                    } else {
+                        // Download file for CSV/XML
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `casino_report_vip_${new Date().toISOString().split('T')[0]}.${format}`;
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(a);
+                        showMessage('✅ VIP report generated and downloaded!', 'success');
+                    }
+                } else {
+                    throw new Error('Report generation failed');
+                }
+                
+            } catch (error) {
+                console.error('VIP report generation failed:', error);
+                showMessage('❌ VIP report generation failed: ' + error.message, 'error');
+            }
+        }
+        
+        // Balance Management Functions
+        async function fixUserBalances() {
+            try {
+                showMessage('Fixing user balances...', 'success');
+                
+                // Open fix balances page in new tab
+                window.open('fix_user_balances.php', '_blank');
+                
+                // Refresh status after a delay
+                setTimeout(() => {
+                    refreshDatabaseStatus();
+                }, 3000);
+                
+            } catch (error) {
+                showMessage('Failed to fix user balances: ' + error.message, 'error');
+            }
+        }
+        
+        async function resetAllBalances() {
+            if (confirm('⚠️ Are you sure you want to reset ALL user balances to $0.00? This will affect all users!')) {
+                try {
+                    showMessage('Resetting all user balances...', 'success');
+                    
+                    const response = await fetch('admin_api.php?action=reset_all_balances', {
+                        method: 'POST'
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        showMessage('✅ All user balances reset to $0.00!', 'success');
+                        
+                        // Refresh database status
+                        refreshDatabaseStatus();
+                        
+                    } else {
+                        const error = await response.json();
+                        showMessage('❌ Failed to reset balances: ' + error.error, 'error');
+                    }
+                    
+                } catch (error) {
+                    showMessage('❌ Reset failed: ' + error.message, 'error');
+                }
+            }
+        }
+        
+        async function generateFinancialReport() {
+            try {
+                showMessage('Generating financial report...', 'success');
+                
+                const format = prompt('Enter format (json, csv, xml):', 'json');
+                if (!format) return;
+                
+                const dateFrom = prompt('Enter start date (YYYY-MM-DD) or leave empty:', '');
+                const dateTo = prompt('Enter end date (YYYY-MM-DD) or leave empty:', '');
+                
+                const response = await fetch('generate_reports.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        type: 'financial',
+                        format: format,
+                        date_from: dateFrom,
+                        date_to: dateTo
+                    })
+                });
+                
+                if (response.ok) {
+                    if (format === 'json') {
+                        const data = await response.json();
+                        showMessage('✅ Financial report generated! Check downloads folder.', 'success');
+                    } else {
+                        // Download file for CSV/XML
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `casino_report_financial_${new Date().toISOString().split('T')[0]}.${format}`;
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(a);
+                        showMessage('✅ Financial report generated and downloaded!', 'success');
+                    }
+                } else {
+                    throw new Error('Report generation failed');
+                }
+                
+            } catch (error) {
+                console.error('Financial report generation failed:', error);
+                showMessage('❌ Financial report generation failed: ' + error.message, 'error');
+            }
+        }
+        
+        async function generateGameReport() {
+            try {
+                showMessage('Generating game report...', 'success');
+                
+                const format = prompt('Enter format (json, csv, xml):', 'json');
+                if (!format) return;
+                
+                const dateFrom = prompt('Enter start date (YYYY-MM-DD) or leave empty:', '');
+                const dateTo = prompt('Enter end date (YYYY-MM-DD) or leave empty:', '');
+                
+                const response = await fetch('generate_reports.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        type: 'game',
+                        format: format,
+                        date_from: dateFrom,
+                        date_to: dateTo
+                    })
+                });
+                
+                if (response.ok) {
+                    if (format === 'json') {
+                        const data = await response.json();
+                        showMessage('✅ Game report generated! Check downloads folder.', 'success');
+                    } else {
+                        // Download file for CSV/XML
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `casino_report_game_${new Date().toISOString().split('T')[0]}.${format}`;
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(a);
+                        showMessage('✅ Game report generated and downloaded!', 'success');
+                    }
+                } else {
+                    throw new Error('Report generation failed');
+                }
+                
+            } catch (error) {
+                console.error('Game report generation failed:', error);
+                showMessage('❌ Game report generation failed: ' + error.message, 'error');
+            }
+        }
+        
+        // Initialize database status when database tab is shown
+        function showTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+            
+            currentTab = tabName;
+            displayRequests();
+            
+            // Load user balances if users tab is selected
+            if (tabName === 'users') {
+                loadUserBalances();
+            }
+            
+            // Load contact messages if contact tab is selected
+            if (tabName === 'contact') {
+                loadContactMessages();
+            }
+            
+            // Load notifications if notifications tab is selected
+            if (tabName === 'notifications') {
+                loadNotifications();
+            }
+            
+            // Initialize database if database tab is selected
+            if (tabName === 'database') {
+                console.log('Database tab selected, initializing...');
+                initializeDatabaseSection();
+            }
+        }
+        
+        // Debug function to show database information
+        function debugDatabase() {
+            try {
+                console.log('=== DATABASE DEBUG INFO ===');
+                
+                // Check if database elements exist
+                const dbElements = [
+                    'dbStatusDot', 'dbStatusText', 'tableCount', 'totalUserCount',
+                    'vipUserCount', 'totalTransactionCount', 'activeUsersCount',
+                    'newRegistrationsCount', 'totalWageredAmount', 'systemHealthStatus'
+                ];
+                
+                console.log('Database elements check:');
+                dbElements.forEach(id => {
+                    const element = document.getElementById(id);
+                    console.log(`- ${id}: ${element ? 'EXISTS' : 'MISSING'}`);
+                });
+                
+                // Check current tab
+                console.log('Current tab:', currentTab);
+                
+                // Check if database tab is active
+                const databaseTab = document.getElementById('database');
+                console.log('Database tab exists:', !!databaseTab);
+                console.log('Database tab is active:', databaseTab?.classList.contains('active'));
+                
+                // Show debug info to user
+                let debugInfo = '🐛 Database Debug Info:\n\n';
+                debugInfo += `Current Tab: ${currentTab}\n`;
+                debugInfo += `Database Tab Active: ${databaseTab?.classList.contains('active')}\n\n`;
+                debugInfo += 'Element Status:\n';
+                
+                dbElements.forEach(id => {
+                    const element = document.getElementById(id);
+                    debugInfo += `- ${id}: ${element ? '✅ EXISTS' : '❌ MISSING'}\n`;
+                });
+                
+                alert(debugInfo);
+                
+            } catch (error) {
+                console.error('Debug function error:', error);
+                showMessage('❌ Debug failed: ' + error.message, 'error');
+            }
+        }
+        
+        // Check database setup status
+        async function checkDatabaseSetup() {
+            try {
+                showMessage('🔍 Checking database setup...', 'success');
+                
+                // Check if setup_database.php exists
+                const setupResponse = await fetch('setup_database.php');
+                if (setupResponse.ok) {
+                    console.log('✅ setup_database.php exists and is accessible');
+                } else {
+                    console.error('❌ setup_database.php not accessible');
+                }
+                
+                // Check if admin_api.php exists and responds
+                const apiResponse = await fetch('admin_api.php?action=get_stats');
+                if (apiResponse.ok) {
+                    const data = await apiResponse.json();
+                    if (data.success) {
+                        console.log('✅ admin_api.php is working and responding');
+                        console.log('Database stats:', data.data);
+                        
+                        // Show setup status
+                        let setupStatus = '🔍 Database Setup Status:\n\n';
+                        setupStatus += `✅ API Connection: Working\n`;
+                        setupStatus += `✅ Total Users: ${data.data.total_users || 0}\n`;
+                        setupStatus += `✅ VIP Users: ${data.data.vip_users || 0}\n`;
+                        setupStatus += `✅ Total Deposits: ${data.data.total_deposits || 0}\n`;
+                        setupStatus += `✅ Total Withdrawals: ${data.data.total_withdrawals || 0}\n`;
+                        setupStatus += `✅ Pending Requests: ${data.data.pending_requests || 0}\n`;
+                        setupStatus += `✅ Today's New Users: ${data.data.today_new_users || 0}\n`;
+                        
+                        alert(setupStatus);
+                        
+                    } else {
+                        console.error('❌ admin_api.php returned error:', data.error);
+                        showMessage('❌ Database API error: ' + data.error, 'error');
+                    }
+                } else {
+                    console.error('❌ admin_api.php not responding');
+                    showMessage('❌ Database API not responding (HTTP ' + apiResponse.status + ')', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Database setup check failed:', error);
+                showMessage('❌ Database setup check failed: ' + error.message, 'error');
+            }
+        }
+        
+        // Initialize database section with better error handling
+        async function initializeDatabaseSection() {
+            try {
+                console.log('Initializing database section...');
+                
+                // Check if database elements exist
+                const dbElements = [
+                    'dbStatusDot', 'dbStatusText', 'tableCount', 'totalUserCount',
+                    'vipUserCount', 'totalTransactionCount', 'activeUsersCount',
+                    'newRegistrationsCount', 'totalWageredAmount', 'systemHealthStatus'
+                ];
+                
+                const missingElements = dbElements.filter(id => !document.getElementById(id));
+                if (missingElements.length > 0) {
+                    console.error('Missing database elements:', missingElements);
+                    showMessage('❌ Database section elements not found. Please refresh the page.', 'error');
+                    return;
+                }
+                
+                // Initialize with loading state
+                document.getElementById('dbStatusDot').textContent = '🔄';
+                document.getElementById('dbStatusText').textContent = 'Initializing...';
+                
+                // Refresh database status
+                await refreshDatabaseStatus();
+                
+            } catch (error) {
+                console.error('Failed to initialize database section:', error);
+                showMessage('❌ Failed to initialize database section: ' + error.message, 'error');
+            }
+        }
+    </script>
+<script>
+// Global Player Search (appears at top of admin)
+document.addEventListener('DOMContentLoaded', function(){
+    try {
+        // Migrate any existing users from per-user balance keys or last login into demo_users/demo_wallets
+        (function migrateUsersFromLocalKeys(){
+            try {
+                const UK = 'demo_users';
+                const WK = 'demo_wallets';
+                const now = new Date().toISOString();
+                let users = [];
+                try { users = JSON.parse(localStorage.getItem(UK) || '[]'); } catch { users = []; }
+                let wallets = {};
+                try { wallets = JSON.parse(localStorage.getItem(WK) || '{}'); } catch { wallets = {}; }
+                const existingUsernames = new Set(users.map(u => String(u.username).toLowerCase()));
+                // Scan localStorage for balance:<username>
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && key.startsWith('balance:')) {
+                        const uname = key.slice('balance:'.length);
+                        const unameLc = uname.toLowerCase();
+                        if (!existingUsernames.has(unameLc)) {
+                            const id = users.length > 0 ? Math.max(...users.map(u => Number(u.id)||0)) + 1 : 1;
+                            users.push({ id, username: uname, email: '', first_name: '', last_name: '', is_verified: false, is_active: true, created_at: now, last_login: now });
+                            const bal = parseInt(localStorage.getItem(key) || '0');
+                            wallets[id] = { balance: isNaN(bal) ? 0 : bal, bonus_balance: 0, locked_balance: 0, total_deposited: 0, total_withdrawn: 0, updated_at: now };
+                            existingUsernames.add(unameLc);
+                        }
+                    }
+                }
+                // Include last logged in basic user if missing
+                const lastUser = (localStorage.getItem('username') || '').trim();
+                if (lastUser && !existingUsernames.has(lastUser.toLowerCase())) {
+                    const id = users.length > 0 ? Math.max(...users.map(u => Number(u.id)||0)) + 1 : 1;
+                    const email = localStorage.getItem('email') || '';
+                    users.push({ id, username: lastUser, email, first_name: '', last_name: '', is_verified: false, is_active: true, created_at: now, last_login: now });
+                    const bal = parseInt(localStorage.getItem(`balance:${lastUser}`) || '0');
+                    wallets[id] = { balance: isNaN(bal) ? 0 : bal, bonus_balance: 0, locked_balance: 0, total_deposited: 0, total_withdrawn: 0, updated_at: now };
+                }
+                localStorage.setItem(UK, JSON.stringify(users));
+                localStorage.setItem(WK, JSON.stringify(wallets));
+            } catch (e) { /* ignore */ }
+        })();
+        function getAdminDB() {
+            if (window.adminDB && typeof window.adminDB.searchUsers === 'function') return window.adminDB;
+            // Fallback shim using localStorage if adminDB is unavailable
+            const STORAGE_USERS = 'demo_users';
+            const STORAGE_WALLETS = 'demo_wallets';
+            return {
+                async searchUsers(query, limit = 25) {
+                    const q = String(query || '').toLowerCase();
+                    const users = JSON.parse(localStorage.getItem(STORAGE_USERS) || '[]');
+                    const wallets = JSON.parse(localStorage.getItem(STORAGE_WALLETS) || '{}');
+                    return users.filter(u => (
+                        (u.username||'').toLowerCase().includes(q) ||
+                        (u.email||'').toLowerCase().includes(q) ||
+                        (u.first_name||'').toLowerCase().includes(q) ||
+                        (u.last_name||'').toLowerCase().includes(q)
+                    )).slice(0, limit).map(u => ({ ...u, balance: Number((wallets[u.id] && wallets[u.id].balance) || 0) }));
+                },
+                async getUserDetails(userId) {
+                    const users = JSON.parse(localStorage.getItem(STORAGE_USERS) || '[]');
+                    const wallets = JSON.parse(localStorage.getItem(STORAGE_WALLETS) || '{}');
+                    const u = users.find(x => Number(x.id) === Number(userId));
+                    if (!u) throw new Error('User not found');
+                    return { ...u, balance: Number((wallets[u.id] && wallets[u.id].balance) || 0) };
+                }
+            };
+        }
+
+        const bar = document.createElement('div');
+        bar.id = 'globalPlayerSearchBar';
+        bar.style.position = 'sticky';
+        bar.style.top = '0';
+        bar.style.zIndex = '100';
+        bar.style.padding = '10px 16px';
+        bar.style.background = '#1a202c';
+        bar.style.borderBottom = '2px solid #4a5568';
+        bar.innerHTML = `
+            <div style="display:flex;gap:10px;align-items:center;max-width:900px;margin:0 auto;">
+                <input id="globalUserSearch" type="text" placeholder="Search players by username, email, or name..." 
+                       style="flex:1;padding:10px;border-radius:8px;border:2px solid #4a5568;background:#0b1220;color:#e2e8f0;" />
+                <button id="globalUserSearchBtn" style="padding:10px 16px;border:none;border-radius:8px;background:#fbbf24;color:#1a202c;font-weight:700;cursor:pointer;">Search</button>
+            </div>
+            <div id="globalUserResults" style="max-width:900px;margin:10px auto 0;display:none;background:#0b1220;border:2px solid #4a5568;border-radius:10px;padding:10px"></div>
+        `;
+        document.body.insertBefore(bar, document.body.firstChild);
+
+        async function runSearch() {
+            const q = (document.getElementById('globalUserSearch').value || '').trim();
+            const resultsDiv = document.getElementById('globalUserResults');
+            if (!q) { resultsDiv.style.display = 'none'; resultsDiv.innerHTML=''; return; }
+            try {
+                const db = getAdminDB();
+                const users = await db.searchUsers(q, 25);
+                if (!users || users.length === 0) {
+                    resultsDiv.style.display = 'block';
+                    resultsDiv.innerHTML = '<div style="color:#e2e8f0">No users found.</div>';
+                    return;
+                }
+                // Render list and allow opening details
+                resultsDiv.style.display = 'block';
+                resultsDiv.innerHTML = users.map(u => `
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border-bottom:1px solid #4a5568;color:#e2e8f0">
+                        <div>
+                            <div style="font-weight:700">${u.username}</div>
+                            <div style="font-size:12px;color:#a0aec0">${u.email || ''}</div>
+                        </div>
+                        <div style="display:flex;gap:8px;align-items:center">
+                            <div style="color:#fbbf24;font-weight:800">$${parseFloat(u.balance || 0).toFixed(2)}</div>
+                            <button data-userid="${u.id}" class="openDetailsBtn" style="padding:6px 10px;border:none;border-radius:6px;background:#4a5568;color:#fff;cursor:pointer">View</button>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Attach handlers
+                resultsDiv.querySelectorAll('.openDetailsBtn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const id = parseInt(e.currentTarget.getAttribute('data-userid'));
+                        try {
+                            const db = getAdminDB();
+                            const user = await db.getUserDetails(id);
+                            if (typeof window.showUserDetailsModal === 'function') {
+                                window.showUserDetailsModal(user);
+                            }
+                        } catch (err) {
+                            console.error('Open details failed', err);
+                        }
+                    });
+                });
+            } catch (err) {
+                console.error('Global search failed', err);
+                resultsDiv.style.display = 'block';
+                resultsDiv.innerHTML = `<div style="color:#fca5a5">Search error: ${err.message}</div>`;
+            }
+        }
+
+        document.getElementById('globalUserSearchBtn').addEventListener('click', runSearch);
+        document.getElementById('globalUserSearch').addEventListener('keyup', function(e){ if (e.key === 'Enter') runSearch(); });
+
+        // All Users & Stats Section
+        const allUsersSection = document.createElement('section');
+        allUsersSection.id = 'allUsersStatsSection';
+        allUsersSection.style.maxWidth = '1100px';
+        allUsersSection.style.margin = '20px auto';
+        allUsersSection.style.background = '#1a202c';
+        allUsersSection.style.border = '2px solid #4a5568';
+        allUsersSection.style.borderRadius = '12px';
+        allUsersSection.style.padding = '16px';
+        allUsersSection.innerHTML = `
+            <h2 style="color:#fbbf24;margin:0 0 12px 0;">All Users & Stats</h2>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:10px;flex-wrap:wrap;">
+                <div style="color:#a0aec0" id="ausSummary">Loading...</div>
+                <div>
+                    <button id="ausPrev" style="padding:8px 12px;border:none;border-radius:8px;background:#4a5568;color:#fff;cursor:pointer;margin-right:6px;">Prev</button>
+                    <button id="ausNext" style="padding:8px 12px;border:none;border-radius:8px;background:#4a5568;color:#fff;cursor:pointer;">Next</button>
+                </div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap;">
+                <input id="delUserInput" type="text" placeholder="Username to delete (e.g., demo_user)" 
+                       style="flex:1;min-width:260px;padding:8px;border-radius:8px;border:2px solid #4a5568;background:#0b1220;color:#e2e8f0;" />
+                <button id="delUserBtn" style="padding:8px 12px;border:none;border-radius:8px;background:#e53e3e;color:#fff;cursor:pointer;">Delete User</button>
+                <span id="delUserMsg" style="color:#a0aec0"></span>
+                <button id="syncBalancesBtn" style="padding:8px 12px;border:none;border-radius:8px;background:#fbbf24;color:#1a202c;cursor:pointer;margin-left:auto;">Sync Balances to User Keys</button>
+            </div>
+            <div style="overflow:auto;border:1px solid #334155;border-radius:8px;">
+                <table style="width:100%;border-collapse:collapse;color:#e2e8f0;">
+                    <thead>
+                        <tr style="background:#0b1220;">
+                            <th style="text-align:left;padding:10px;border-bottom:1px solid #334155;">ID</th>
+                            <th style="text-align:left;padding:10px;border-bottom:1px solid #334155;">Username</th>
+                            <th style="text-align:left;padding:10px;border-bottom:1px solid #334155;">Email</th>
+                            <th style="text-align:right;padding:10px;border-bottom:1px solid #334155;">Balance</th>
+                            <th style="text-align:right;padding:10px;border-bottom:1px solid #334155;">Bonus</th>
+                            <th style="text-align:right;padding:10px;border-bottom:1px solid #334155;">Deposited</th>
+                            <th style="text-align:right;padding:10px;border-bottom:1px solid #334155;">Withdrawn</th>
+                            <th style="text-align:center;padding:10px;border-bottom:1px solid #334155;">VIP</th>
+                            <th style="text-align:center;padding:10px;border-bottom:1px solid #334155;">Status</th>
+                            <th style="text-align:center;padding:10px;border-bottom:1px solid #334155;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ausBody">
+                        <tr><td colspan="10" style="padding:12px;text-align:center;color:#a0aec0;">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        `;
+        document.body.insertBefore(allUsersSection, bar.nextSibling);
+
+        let ausPage = 1;
+        const ausLimit = 20;
+        async function loadAllUsers(page){
+            const db = getAdminDB();
+            const res = await db.getUsers ? db.getUsers(page, ausLimit) : { success:true, data: await db.searchUsers('', ausLimit), pagination:{ page:1, pages:1, total:0, limit:ausLimit } };
+            const users = res.data || [];
+            const pag = res.pagination || { page:1, pages:1, total: users.length, limit: users.length };
+            const body = document.getElementById('ausBody');
+            const summary = document.getElementById('ausSummary');
+            if (users.length === 0){
+                body.innerHTML = '<tr><td colspan="10" style="padding:12px;text-align:center;color:#a0aec0;">No users found.</td></tr>';
+            } else {
+                body.innerHTML = users.map(u => `
+                    <tr>
+                        <td style="padding:10px;border-bottom:1px solid #334155;">${u.id}</td>
+                        <td style="padding:10px;border-bottom:1px solid #334155;">${u.username}</td>
+                        <td style="padding:10px;border-bottom:1px solid #334155;">${u.email || ''}</td>
+                        <td style="padding:10px;border-bottom:1px solid #334155;text-align:right;color:#fbbf24;font-weight:700;">$${parseFloat(u.balance || 0).toFixed(2)}</td>
+                        <td style="padding:10px;border-bottom:1px solid #334155;text-align:right;">$${parseFloat(u.bonus_balance || 0).toFixed(2)}</td>
+                        <td style="padding:10px;border-bottom:1px solid #334155;text-align:right;">$${parseFloat(u.total_deposited || 0).toFixed(2)}</td>
+                        <td style="padding:10px;border-bottom:1px solid #334155;text-align:right;">$${parseFloat(u.total_withdrawn || 0).toFixed(2)}</td>
+                        <td style="padding:10px;border-bottom:1px solid #334155;text-align:center;">${u.vip_level || 'Bronze'}</td>
+                        <td style="padding:10px;border-bottom:1px solid #334155;text-align:center;">
+                            <span style="color:${u.is_active ? '#48bb78' : '#e53e3e'};font-weight:700;">${u.is_active ? 'Active' : 'Inactive'}</span>
+                        </td>
+                        <td style="padding:10px;border-bottom:1px solid #334155;text-align:center;display:flex;gap:6px;justify-content:center;">
+                            <button data-userid="${u.id}" class="ausView" style="padding:6px 10px;border:none;border-radius:6px;background:#4a5568;color:#fff;cursor:pointer">View</button>
+                            <button data-userid="${u.id}" data-active="${u.is_active ? '1':'0'}" class="ausToggleBan" style="padding:6px 10px;border:none;border-radius:6px;background:${u.is_active ? '#e53e3e':'#48bb78'};color:#fff;cursor:pointer">${u.is_active ? 'Ban':'Unban'}</button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+            summary.textContent = `Page ${pag.page} of ${pag.pages} — ${pag.total} users`;
+            document.getElementById('ausPrev').disabled = pag.page <= 1;
+            document.getElementById('ausNext').disabled = pag.page >= pag.pages;
+            document.querySelectorAll('.ausView').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const id = parseInt(e.currentTarget.getAttribute('data-userid'));
+                    const db = getAdminDB();
+                    try {
+                        const user = await db.getUserDetails(id);
+                        if (typeof window.showUserDetailsModal === 'function') window.showUserDetailsModal(user);
+                    } catch(err){ console.error('View user failed', err); }
+                });
+            });
+            // Ban/Unban handlers
+            document.querySelectorAll('.ausToggleBan').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const id = parseInt(e.currentTarget.getAttribute('data-userid'));
+                    const currentActive = e.currentTarget.getAttribute('data-active') === '1';
+                    try {
+                        // Try via adminDB if available
+                        const db = getAdminDB();
+                        if (db.updateUserStatus) {
+                            await db.updateUserStatus(id, !currentActive);
+                        } else {
+                            // Fallback direct localStorage update
+                            const UK = 'demo_users';
+                            const users = JSON.parse(localStorage.getItem(UK) || '[]');
+                            const idx = users.findIndex(u => Number(u.id) === id);
+                            if (idx > -1) {
+                                users[idx].is_active = !currentActive;
+                                localStorage.setItem(UK, JSON.stringify(users));
+                            }
+                        }
+                        loadAllUsers(pag.page);
+                    } catch (err) {
+                        console.error('Toggle ban failed', err);
+                    }
+                });
+            });
+        }
+
+        document.getElementById('ausPrev').addEventListener('click', () => { if (ausPage>1){ ausPage--; loadAllUsers(ausPage);} });
+        document.getElementById('ausNext').addEventListener('click', () => { ausPage++; loadAllUsers(ausPage); });
+        loadAllUsers(ausPage);
+
+        // Delete user by username (local mode)
+        document.getElementById('delUserBtn').addEventListener('click', () => {
+            const uname = (document.getElementById('delUserInput').value || '').trim();
+            const msg = document.getElementById('delUserMsg');
+            if (!uname){ msg.textContent = 'Enter a username.'; return; }
+            try {
+                const UK = 'demo_users';
+                const WK = 'demo_wallets';
+                const users = JSON.parse(localStorage.getItem(UK) || '[]');
+                const wallets = JSON.parse(localStorage.getItem(WK) || '{}');
+                const idx = users.findIndex(u => String(u.username).toLowerCase() === uname.toLowerCase());
+                if (idx === -1){ msg.textContent = `User "${uname}" not found.`; return; }
+                const id = users[idx].id;
+                users.splice(idx,1);
+                delete wallets[id];
+                localStorage.setItem(UK, JSON.stringify(users));
+                localStorage.setItem(WK, JSON.stringify(wallets));
+                // Remove per-user balance key used by games
+                localStorage.removeItem(`balance:${uname}`);
+                msg.textContent = `User "${uname}" deleted.`;
+                loadAllUsers(ausPage);
+            } catch (e) {
+                console.error('Delete failed', e);
+                msg.textContent = 'Delete failed.';
+            }
+        });
+
+        // Sync balances: demo_wallets -> balance:<username>
+        document.getElementById('syncBalancesBtn').addEventListener('click', () => {
+            try {
+                const UK = 'demo_users';
+                const WK = 'demo_wallets';
+                const users = JSON.parse(localStorage.getItem(UK) || '[]');
+                const wallets = JSON.parse(localStorage.getItem(WK) || '{}');
+                users.forEach(u => {
+                    const w = wallets[u.id];
+                    if (u && w && typeof w.balance !== 'undefined') {
+                        localStorage.setItem(`balance:${u.username}`, String(parseInt(w.balance)||0));
+                    }
+                });
+                document.getElementById('delUserMsg').textContent = 'Balances synced.';
+            } catch (e) { console.error('Sync failed', e); }
+        });
+
+        // Danger Zone: Delete all users and wallets
+        const dangerZone = document.createElement('section');
+        dangerZone.style.maxWidth = '1100px';
+        dangerZone.style.margin = '20px auto';
+        dangerZone.style.background = '#1a202c';
+        dangerZone.style.border = '2px solid #4a5568';
+        dangerZone.style.borderRadius = '12px';
+        dangerZone.style.padding = '16px';
+        dangerZone.innerHTML = `
+            <h2 style="color:#e53e3e;margin:0 0 12px 0;">Danger Zone</h2>
+            <button id="deleteAllUsersBtn" style="padding:10px 16px;border:none;border-radius:8px;background:#e53e3e;color:#fff;font-weight:700;cursor:pointer;">Delete ALL Users & Wallets</button>
+            <span id="deleteAllMsg" style="margin-left:10px;color:#a0aec0"></span>
+        `;
+        document.body.appendChild(dangerZone);
+        document.getElementById('deleteAllUsersBtn').addEventListener('click', () => {
+            if (!confirm('Are you sure? This will delete ALL users, wallets, balances and requests.')) return;
+            try {
+                localStorage.removeItem('demo_users');
+                localStorage.removeItem('demo_wallets');
+                localStorage.removeItem('vip_requests');
+                // remove per-user balances
+                const toRemove = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const k = localStorage.key(i);
+                    if (k && k.startsWith('balance:')) toRemove.push(k);
+                }
+                toRemove.forEach(k => localStorage.removeItem(k));
+                document.getElementById('deleteAllMsg').textContent = 'All users deleted.';
+                loadAllUsers(1);
+            } catch (e) { console.error(e); }
+        });
+
+        // VIP Requests (Admin Approval)
+        const vipSection = document.createElement('section');
+        vipSection.style.maxWidth = '1100px';
+        vipSection.style.margin = '20px auto';
+        vipSection.style.background = '#1a202c';
+        vipSection.style.border = '2px solid #4a5568';
+        vipSection.style.borderRadius = '12px';
+        vipSection.style.padding = '16px';
+        vipSection.innerHTML = `
+            <h2 style="color:#fbbf24;margin:0 0 12px 0;">VIP Requests</h2>
+            <div id="vipRequestsList" style="border:1px solid #334155;border-radius:8px;overflow:auto"></div>
+        `;
+        document.body.appendChild(vipSection);
+
+        function renderVipRequests() {
+            const container = document.getElementById('vipRequestsList');
+            const requests = JSON.parse(localStorage.getItem('vip_requests') || '[]');
+            if (!requests.length) { container.innerHTML = '<div style="padding:12px;color:#a0aec0">No VIP requests.</div>'; return; }
+            const users = JSON.parse(localStorage.getItem('demo_users') || '[]');
+            container.innerHTML = requests.map((r, idx) => {
+                const u = users.find(x => String(x.username).toLowerCase() === String(r.username).toLowerCase());
+                const status = r.status || 'pending';
+                return `
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border-bottom:1px solid #334155;color:#e2e8f0">
+                        <div>
+                            <div style="font-weight:700">${r.username}</div>
+                            <div style="font-size:12px;color:#a0aec0">Requested: ${new Date(r.requestedAt).toLocaleString()} — Status: ${status}</div>
+                        </div>
+                        <div>
+                            ${status === 'pending' ? `<button data-idx="${idx}" class="approveVipBtn" style="padding:6px 10px;border:none;border-radius:6px;background:#48bb78;color:#fff;cursor:pointer;margin-right:8px;">Approve ($50)</button>` : ''}
+                            ${status === 'pending' ? `<button data-idx="${idx}" class="rejectVipBtn" style="padding:6px 10px;border:none;border-radius:6px;background:#e53e3e;color:#fff;cursor:pointer;">Reject</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            container.querySelectorAll('.approveVipBtn').forEach(btn => btn.addEventListener('click', () => approveVip(parseInt(btn.getAttribute('data-idx')))));
+            container.querySelectorAll('.rejectVipBtn').forEach(btn => btn.addEventListener('click', () => rejectVip(parseInt(btn.getAttribute('data-idx')))));
+        }
+
+        function approveVip(idx) {
+            const requests = JSON.parse(localStorage.getItem('vip_requests') || '[]');
+            const req = requests[idx]; if (!req) return;
+            const users = JSON.parse(localStorage.getItem('demo_users') || '[]');
+            const wallets = JSON.parse(localStorage.getItem('demo_wallets') || '{}');
+            const u = users.find(x => String(x.username).toLowerCase() === String(req.username).toLowerCase());
+            if (!u) { requests[idx].status = 'rejected'; localStorage.setItem('vip_requests', JSON.stringify(requests)); renderVipRequests(); return; }
+            const w = wallets[u.id] || { balance: 0 };
+            if ((parseInt(w.balance) || 0) < 50) { alert('User has insufficient balance to pay $50 VIP fee.'); return; }
+            // deduct $50 and mark VIP
+            w.balance = (parseInt(w.balance) || 0) - 50;
+            wallets[u.id] = w;
+            u.is_vip = true;
+            requests[idx].status = 'approved';
+            localStorage.setItem('demo_users', JSON.stringify(users));
+            localStorage.setItem('demo_wallets', JSON.stringify(wallets));
+            localStorage.setItem('vip_requests', JSON.stringify(requests));
+            // sync per-user key and broadcast
+            localStorage.setItem(`balance:${u.username}`, String(w.balance));
+            localStorage.setItem('balance_sync', JSON.stringify({ username: u.username, balance: w.balance, ts: Date.now() }));
+            renderVipRequests();
+            loadAllUsers(ausPage);
+        }
+
+        function rejectVip(idx) {
+            const requests = JSON.parse(localStorage.getItem('vip_requests') || '[]');
+            if (!requests[idx]) return;
+            requests[idx].status = 'rejected';
+            localStorage.setItem('vip_requests', JSON.stringify(requests));
+            renderVipRequests();
+        }
+
+        renderVipRequests();
+
+        // Transfer Requests (Admin Approval)
+        const trqSection = document.createElement('section');
+        trqSection.style.maxWidth = '1100px';
+        trqSection.style.margin = '20px auto';
+        trqSection.style.background = '#1a202c';
+        trqSection.style.border = '2px solid #4a5568';
+        trqSection.style.borderRadius = '12px';
+        trqSection.style.padding = '16px';
+        trqSection.innerHTML = `
+            <h2 style=\"color:#fbbf24;margin:0 0 12px 0;\">Transfer Requests</h2>
+            <div id=\"trqList\" style=\"border:1px solid #334155;border-radius:8px;overflow:auto\"></div>
+        `;
+        document.body.appendChild(trqSection);
+
+        function renderTransferRequests() {
+            const container = document.getElementById('trqList');
+            const reqs = JSON.parse(localStorage.getItem('transfer_requests') || '[]');
+            if (!reqs.length) { container.innerHTML = '<div style="padding:12px;color:#a0aec0">No transfer requests.</div>'; return; }
+            container.innerHTML = reqs.map((r, idx) => `
+                <div style=\"display:flex;justify-content:space-between;align-items:center;padding:10px;border-bottom:1px solid #334155;color:#e2e8f0\">
+                    <div>
+                        <div style=\"font-weight:700\">${r.from} → ${r.to}</div>
+                        <div style=\"font-size:12px;color:#a0aec0\">$${r.amount} — ${r.status} — ${new Date(r.requestedAt).toLocaleString()}</div>
+                    </div>
+                    <div>
+                        ${r.status === 'pending' ? `<button data-idx=\"${idx}\" class=\"approveTrqBtn\" style=\"padding:6px 10px;border:none;border-radius:6px;background:#48bb78;color:#fff;cursor:pointer;margin-right:8px;\">Approve</button>` : ''}
+                        ${r.status === 'pending' ? `<button data-idx=\"${idx}\" class=\"rejectTrqBtn\" style=\"padding:6px 10px;border:none;border-radius:6px;background:#e53e3e;color:#fff;cursor:pointer;\">Reject</button>` : ''}
+                    </div>
+                </div>
+            `).join('');
+            container.querySelectorAll('.approveTrqBtn').forEach(btn => btn.addEventListener('click', () => approveTransfer(parseInt(btn.getAttribute('data-idx')))));
+            container.querySelectorAll('.rejectTrqBtn').forEach(btn => btn.addEventListener('click', () => rejectTransfer(parseInt(btn.getAttribute('data-idx')))));
+        }
+
+        function approveTransfer(idx) {
+            const reqs = JSON.parse(localStorage.getItem('transfer_requests') || '[]');
+            const r = reqs[idx]; if (!r) return;
+            const users = JSON.parse(localStorage.getItem('demo_users') || '[]');
+            const wallets = JSON.parse(localStorage.getItem('demo_wallets') || '{}');
+            const uf = users.find(u => String(u.username).toLowerCase() === r.from.toLowerCase());
+            const ut = users.find(u => String(u.username).toLowerCase() === r.to.toLowerCase());
+            if (!uf || !ut) { reqs[idx].status = 'rejected'; localStorage.setItem('transfer_requests', JSON.stringify(reqs)); renderTransferRequests(); return; }
+            const wf = wallets[uf.id] || { balance: 0 };
+            const wt = wallets[ut.id] || { balance: 0 };
+            if ((parseInt(wf.balance)||0) < parseInt(r.amount)) { alert('Sender has insufficient balance.'); return; }
+            wf.balance = (parseInt(wf.balance)||0) - parseInt(r.amount);
+            wt.balance = (parseInt(wt.balance)||0) + parseInt(r.amount);
+            wallets[uf.id] = wf; wallets[ut.id] = wt;
+            localStorage.setItem('demo_wallets', JSON.stringify(wallets));
+            reqs[idx].status = 'approved';
+            localStorage.setItem('transfer_requests', JSON.stringify(reqs));
+            // sync per-user keys and broadcast
+            localStorage.setItem(`balance:${r.from}`, String(wf.balance));
+            localStorage.setItem(`balance:${r.to}`, String(wt.balance));
+            localStorage.setItem('balance_sync', JSON.stringify({ username: r.from, balance: wf.balance, ts: Date.now() }));
+            localStorage.setItem('balance_sync', JSON.stringify({ username: r.to, balance: wt.balance, ts: Date.now()+1 }));
+            renderTransferRequests();
+            loadAllUsers(ausPage);
+        }
+
+        function rejectTransfer(idx) {
+            const reqs = JSON.parse(localStorage.getItem('transfer_requests') || '[]');
+            if (!reqs[idx]) return;
+            reqs[idx].status = 'rejected';
+            localStorage.setItem('transfer_requests', JSON.stringify(reqs));
+            renderTransferRequests();
+        }
+
+        renderTransferRequests();
+
+        // Manual VIP Grant/Revoke
+        const vipGrant = document.createElement('section');
+        vipGrant.style.maxWidth = '1100px';
+        vipGrant.style.margin = '20px auto';
+        vipGrant.style.background = '#1a202c';
+        vipGrant.style.border = '2px solid #4a5568';
+        vipGrant.style.borderRadius = '12px';
+        vipGrant.style.padding = '16px';
+        vipGrant.innerHTML = `
+            <h2 style="color:#fbbf24;margin:0 0 12px 0;">VIP Management</h2>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;align-items:flex-end;">
+                <div>
+                    <label style="display:block;color:#a0aec0;margin-bottom:6px;">Username</label>
+                    <input id="vipUserInput" type="text" placeholder="exact username" style="width:100%;padding:8px;border-radius:8px;border:2px solid #4a5568;background:#0b1220;color:#e2e8f0;" />
+                </div>
+                <div style="grid-column:1/-1;display:flex;gap:10px;align-items:center;">
+                    <button id="grantVipBtn" style="padding:8px 12px;border:none;border-radius:8px;background:#48bb78;color:#fff;cursor:pointer;">Grant VIP</button>
+                    <button id="revokeVipBtn" style="padding:8px 12px;border:none;border-radius:8px;background:#e53e3e;color:#fff;cursor:pointer;">Revoke VIP</button>
+                    <span id="vipGrantMsg" style="color:#a0aec0"></span>
+                </div>
+            </div>`;
+        document.body.appendChild(vipGrant);
+
+        function setVipForUser(username, isVip) {
+            const users = JSON.parse(localStorage.getItem('demo_users') || '[]');
+            const u = users.find(x => String(x.username).toLowerCase() === String(username).toLowerCase());
+            const msgEl = document.getElementById('vipGrantMsg');
+            if (!u) { msgEl.textContent = `User "${username}" not found.`; return; }
+            u.is_vip = !!isVip;
+            localStorage.setItem('demo_users', JSON.stringify(users));
+            msgEl.textContent = isVip ? `VIP granted to ${u.username}.` : `VIP revoked from ${u.username}.`;
+            loadAllUsers(ausPage);
+        }
+
+        document.getElementById('grantVipBtn').addEventListener('click', () => {
+            const uname = (document.getElementById('vipUserInput').value || '').trim();
+            if (!uname) { document.getElementById('vipGrantMsg').textContent = 'Enter a username.'; return; }
+            setVipForUser(uname, true);
+        });
+        document.getElementById('revokeVipBtn').addEventListener('click', () => {
+            const uname = (document.getElementById('vipUserInput').value || '').trim();
+            if (!uname) { document.getElementById('vipGrantMsg').textContent = 'Enter a username.'; return; }
+            setVipForUser(uname, false);
+        });
+
+        // --- Send Notification Section ---
+        const notifSection = document.createElement('section');
+        notifSection.id = 'adminSendNotification';
+        notifSection.style.maxWidth = '1100px';
+        notifSection.style.margin = '20px auto';
+        notifSection.style.background = '#1a202c';
+        notifSection.style.border = '2px solid #4a5568';
+        notifSection.style.borderRadius = '12px';
+        notifSection.style.padding = '16px';
+        notifSection.innerHTML = `
+            <h2 style="color:#fbbf24;margin:0 0 12px 0;">Send Notification</h2>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;align-items:flex-end;">
+                <div>
+                    <label style="display:block;color:#a0aec0;margin-bottom:6px;">To (username or 'all')</label>
+                    <input id="notifTarget" type="text" placeholder="momo or all" style="width:100%;padding:8px;border-radius:8px;border:2px solid #4a5568;background:#0b1220;color:#e2e8f0;" />
+                </div>
+                <div>
+                    <label style="display:block;color:#a0aec0;margin-bottom:6px;">Title</label>
+                    <input id="notifTitle" type="text" placeholder="Title" style="width:100%;padding:8px;border-radius:8px;border:2px solid #4a5568;background:#0b1220;color:#e2e8f0;" />
+                </div>
+                <div>
+                    <label style="display:block;color:#a0aec0;margin-bottom:6px;">Type</label>
+                    <select id="notifType" style="width:100%;padding:8px;border-radius:8px;border:2px solid #4a5568;background:#0b1220;color:#e2e8f0;">
+                        <option value="announcement">announcement</option>
+                        <option value="maintenance">maintenance</option>
+                        <option value="promotion">promotion</option>
+                        <option value="security">security</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="display:block;color:#a0aec0;margin-bottom:6px;">Priority</label>
+                    <select id="notifPriority" style="width:100%;padding:8px;border-radius:8px;border:2px solid #4a5568;background:#0b1220;color:#e2e8f0;">
+                        <option value="low">low</option>
+                        <option value="normal" selected>normal</option>
+                        <option value="high">high</option>
+                        <option value="urgent">urgent</option>
+                    </select>
+                </div>
+                <div style="grid-column:1/-1">
+                    <label style="display:block;color:#a0aec0;margin-bottom:6px;">Message</label>
+                    <textarea id="notifMessage" rows="3" placeholder="Write your message..." style="width:100%;padding:8px;border-radius:8px;border:2px solid #4a5568;background:#0b1220;color:#e2e8f0;"></textarea>
+                </div>
+                <div style="grid-column:1/-1;display:flex;gap:10px;align-items:center;">
+                    <button id="sendNotifBtn" style="padding:10px 16px;border:none;border-radius:8px;background:#fbbf24;color:#1a202c;font-weight:700;cursor:pointer;">Send</button>
+                    <button id="testAdminDBBtn" style="padding:10px 16px;border:none;border-radius:8px;background:#28a745;color:white;font-weight:700;cursor:pointer;">Test AdminDB</button>
+                    <span id="notifSendMsg" style="color:#a0aec0"></span>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(notifSection);
+
+        function pushNotificationToUser(username, notif) {
+            const store = JSON.parse(localStorage.getItem('notifications') || '{}');
+            if (!store[username]) store[username] = [];
+            store[username].push(notif);
+            localStorage.setItem('notifications', JSON.stringify(store));
+            try { localStorage.setItem('notifications_sync', JSON.stringify({ username, ts: Date.now() })); } catch(_) {}
+        }
+
+        document.getElementById('sendNotifBtn').addEventListener('click', () => {
+            const target = (document.getElementById('notifTarget').value || '').trim();
+            const title = (document.getElementById('notifTitle').value || '').trim();
+            const message = (document.getElementById('notifMessage').value || '').trim();
+            const type = document.getElementById('notifType').value || 'announcement';
+            const priority = document.getElementById('notifPriority').value || 'normal';
+            const msgEl = document.getElementById('notifSendMsg');
+            if (!target || !title || !message) { msgEl.textContent = 'Fill target, title and message.'; return; }
+            const notif = { title, message, type, priority, read: false, receivedAt: new Date().toISOString() };
+            try {
+                if (target.toLowerCase() === 'all') {
+                    const users = JSON.parse(localStorage.getItem('demo_users') || '[]');
+                    users.forEach(u => pushNotificationToUser(u.username, notif));
+                    msgEl.textContent = `Notification sent to ${users.length} users.`;
+                } else {
+                    // verify user exists
+                    const users = JSON.parse(localStorage.getItem('demo_users') || '[]');
+                    const exists = users.find(u => String(u.username).toLowerCase() === target.toLowerCase());
+                    if (!exists) { msgEl.textContent = `User "${target}" not found.`; return; }
+                    pushNotificationToUser(exists.username, notif);
+                    msgEl.textContent = `Notification sent to ${exists.username}.`;
+                }
+            } catch (e) {
+                console.error('Send notification failed', e);
+                msgEl.textContent = 'Send failed.';
+            }
+        });
+
+        // Test AdminDB button
+        document.getElementById('testAdminDBBtn').addEventListener('click', () => {
+            console.log('Test AdminDB button clicked');
+            console.log('adminDB type:', typeof adminDB);
+            console.log('adminDB value:', adminDB);
+            console.log('adminDB.addUserBalance type:', typeof adminDB?.addUserBalance);
+            
+            const msgEl = document.getElementById('notifSendMsg');
+            if (typeof adminDB === 'undefined') {
+                msgEl.textContent = '❌ adminDB is undefined';
+            } else if (!adminDB.addUserBalance) {
+                msgEl.textContent = '❌ adminDB.addUserBalance is not available';
+            } else {
+                msgEl.textContent = '✅ adminDB is working properly';
+            }
+        });
+    } catch (e) {
+        console.error('Failed to initialize global player search', e);
+    }
+});
+</script>
+</body>
+</html>

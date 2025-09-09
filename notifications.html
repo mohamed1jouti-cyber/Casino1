@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - Casino</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="sync_storage.js"></script>
+    <style>
+        .notifications-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .notifications-header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .notifications-header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        
+        .notifications-header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .notification-filters {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #495057;
+        }
+        
+        .filter-btn:hover, .filter-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+        
+        .notification-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            border-left: 4px solid #667eea;
+        }
+        
+        .notification-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .notification-card.unread {
+            border-left-color: #fbbf24;
+            background: linear-gradient(135deg, #fffbf0 0%, #ffffff 100%);
+        }
+        
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .notification-info {
+            flex: 1;
+        }
+        
+        .notification-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .notification-meta {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .notification-type, .notification-priority, .notification-date {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .notification-message {
+            color: #333;
+            line-height: 1.6;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #667eea;
+        }
+        
+        .notification-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .mark-read-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+        
+        .mark-read-btn:hover {
+            background: #218838;
+            transform: translateY(-1px);
+        }
+        
+        .mark-read-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .back-btn {
+            background: #666;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        
+        .back-btn:hover {
+            background: #555;
+        }
+        
+        .no-notifications {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .priority-low { border-left-color: #28a745; }
+        .priority-normal { border-left-color: #ffc107; }
+        .priority-high { border-left-color: #fd7e14; }
+        .priority-urgent { border-left-color: #dc3545; }
+        
+        @media (max-width: 768px) {
+            .notification-filters {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .notification-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .notification-meta {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="notifications-container">
+        <a href="welcome.html" class="back-btn">← Back to Welcome</a>
+        
+        <div class="notifications-header">
+            <h1>📢 Notifications</h1>
+            <p>Stay updated with important messages from our team</p>
+        </div>
+        
+        <div class="notification-filters">
+            <button class="filter-btn active" onclick="filterNotifications('all')">📋 All</button>
+            <button class="filter-btn" onclick="filterNotifications('unread')">🔔 Unread</button>
+            <button class="filter-btn" onclick="filterNotifications('announcement')">📢 Announcements</button>
+            <button class="filter-btn" onclick="filterNotifications('maintenance')">🔧 Maintenance</button>
+            <button class="filter-btn" onclick="filterNotifications('promotion')">🎁 Promotions</button>
+            <button class="filter-btn" onclick="filterNotifications('security')">🔒 Security</button>
+        </div>
+        
+        <div id="notificationsList">
+            <!-- Notifications will be loaded here -->
+        </div>
+    </div>
+
+    <script>
+        let allNotifications = [];
+        let currentFilter = 'all';
+        
+        // Load user data and notifications
+        document.addEventListener('DOMContentLoaded', function() {
+            loadNotifications();
+        });
+        
+        function loadNotifications() {
+            const username = localStorage.getItem('username') || 'anonymous';
+            const userNotifications = JSON.parse(localStorage.getItem('notifications') || '{}');
+            allNotifications = userNotifications[username] || [];
+            
+            displayNotifications();
+        }
+        
+        function displayNotifications() {
+            const notificationsList = document.getElementById('notificationsList');
+            
+            if (allNotifications.length === 0) {
+                notificationsList.innerHTML = `
+                    <div class="no-notifications">
+                        <h3>📭 No Notifications</h3>
+                        <p>You don't have any notifications yet.</p>
+                        <p>Check back later for updates from our team!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Sort notifications by received date (newest first)
+            const sortedNotifications = allNotifications.sort((a, b) => new Date(b.receivedAt) - new Date(a.receivedAt));
+            
+            notificationsList.innerHTML = sortedNotifications.map((notification, index) => `
+                <div class="notification-card ${notification.read ? '' : 'unread'} priority-${notification.priority}">
+                    <div class="notification-header">
+                        <div class="notification-info">
+                            <div class="notification-title">${notification.title}</div>
+                            <div class="notification-meta">
+                                <div class="notification-type">📋 ${notification.type}</div>
+                                <div class="notification-priority">🎯 ${notification.priority}</div>
+                                <div class="notification-date">📅 ${new Date(notification.receivedAt).toLocaleString()}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="notification-message">💬 ${notification.message}</div>
+                    <div class="notification-actions">
+                        ${!notification.read ? `
+                            <button class="mark-read-btn" onclick="markAsRead(${index})">✅ Mark as Read</button>
+                        ` : `
+                            <button class="mark-read-btn" disabled>✅ Read</button>
+                        `}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function filterNotifications(filter) {
+            currentFilter = filter;
+            
+            // Update active filter button
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            let filteredNotifications = allNotifications;
+            
+            switch (filter) {
+                case 'unread':
+                    filteredNotifications = allNotifications.filter(n => !n.read);
+                    break;
+                case 'announcement':
+                    filteredNotifications = allNotifications.filter(n => n.type === 'announcement');
+                    break;
+                case 'maintenance':
+                    filteredNotifications = allNotifications.filter(n => n.type === 'maintenance');
+                    break;
+                case 'promotion':
+                    filteredNotifications = allNotifications.filter(n => n.type === 'promotion');
+                    break;
+                case 'security':
+                    filteredNotifications = allNotifications.filter(n => n.type === 'security');
+                    break;
+                default:
+                    filteredNotifications = allNotifications;
+            }
+            
+            const notificationsList = document.getElementById('notificationsList');
+            
+            if (filteredNotifications.length === 0) {
+                notificationsList.innerHTML = `
+                    <div class="no-notifications">
+                        <h3>📭 No Notifications Found</h3>
+                        <p>No notifications match the selected filter.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Sort filtered notifications by received date (newest first)
+            const sortedNotifications = filteredNotifications.sort((a, b) => new Date(b.receivedAt) - new Date(a.receivedAt));
+            
+            notificationsList.innerHTML = sortedNotifications.map((notification, index) => `
+                <div class="notification-card ${notification.read ? '' : 'unread'} priority-${notification.priority}">
+                    <div class="notification-header">
+                        <div class="notification-info">
+                            <div class="notification-title">${notification.title}</div>
+                            <div class="notification-meta">
+                                <div class="notification-type">📋 ${notification.type}</div>
+                                <div class="notification-priority">🎯 ${notification.priority}</div>
+                                <div class="notification-date">📅 ${new Date(notification.receivedAt).toLocaleString()}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="notification-message">💬 ${notification.message}</div>
+                    <div class="notification-actions">
+                        ${!notification.read ? `
+                            <button class="mark-read-btn" onclick="markAsRead(${index})">✅ Mark as Read</button>
+                        ` : `
+                            <button class="mark-read-btn" disabled>✅ Read</button>
+                        `}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function markAsRead(index) {
+            const username = localStorage.getItem('username') || 'anonymous';
+            const userNotifications = JSON.parse(localStorage.getItem('notifications') || '{}');
+            
+            if (userNotifications[username] && userNotifications[username][index]) {
+                userNotifications[username][index].read = true;
+                localStorage.setItem('notifications', JSON.stringify(userNotifications));
+                
+                // Update local array
+                allNotifications[index].read = true;
+                
+                // Refresh display
+                if (currentFilter === 'unread') {
+                    filterNotifications('unread');
+                } else {
+                    displayNotifications();
+                }
+                
+                // Update notification count in welcome page
+                updateNotificationCount();
+            }
+        }
+        
+        function updateNotificationCount() {
+            const username = localStorage.getItem('username') || 'anonymous';
+            const userNotifications = JSON.parse(localStorage.getItem('notifications') || '{}');
+            const unreadCount = userNotifications[username] ? userNotifications[username].filter(n => !n.read).length : 0;
+            
+            // Update localStorage for welcome page
+            localStorage.setItem('unreadNotificationCount', unreadCount.toString());
+        }
+        
+        // Update notification count when page loads
+        updateNotificationCount();
+    </script>
+</body>
+</html>
+
+

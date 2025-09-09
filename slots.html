@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slot Machine</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="sync_storage.js"></script>
+  <style>
+    .game-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    .game-header-image {
+      width: 140px;
+      height: auto;
+      margin: 0 auto 10px;
+      display: block;
+      opacity: 0.9;
+    }
+    
+    .game-header-text {
+      margin: 0;
+      color: #fff;
+    }
+    
+    .reels {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 20px 0;
+    }
+    
+    .reel {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+      border: 3px solid #gold;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      color: #fff;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      transition: all 0.3s ease;
+    }
+    
+    .reel.spinning {
+      animation: spin 0.5s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: translateY(-10px); }
+      50% { transform: translateY(10px); }
+      100% { transform: translateY(-10px); }
+    }
+    
+    .bet-section {
+      margin: 20px 0;
+      text-align: center;
+    }
+    
+    .bet-section input {
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      font-size: 16px;
+      width: 120px;
+      text-align: center;
+    }
+    
+    .bet-section input::placeholder {
+      color: rgba(255,255,255,0.7);
+    }
+    
+    .controls {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    
+    .choice-btn {
+      padding: 12px 30px;
+      background: linear-gradient(145deg, #4CAF50, #45a049);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+    
+    .choice-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+    }
+    
+    .choice-btn:disabled {
+      background: #666;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .secondary {
+      padding: 12px 30px;
+      background: linear-gradient(145deg, #666, #555);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+    
+    .secondary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+    }
+    
+    .result {
+      text-align: center;
+      margin: 20px 0;
+      padding: 15px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+      color: #fff;
+      font-size: 14px;
+    }
+    
+    .win {
+      background: linear-gradient(145deg, #4CAF50, #45a049);
+      animation: winPulse 0.5s ease;
+    }
+    
+    @keyframes winPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    
+    .balance {
+      text-align: center;
+      margin: 10px 0;
+      font-size: 18px;
+      color: #fff;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body class="bg">
+  <div class="game-container glass">
+    <div class="game-header">
+      <img src="images/slots.svg" alt="Slots" class="game-header-image">
+      <h1 class="game-header-text">🎰 Slot Machine</h1>
+    </div>
+    
+    <div class="balance">Balance: <span id="balance">$1000</span> 💰</div>
+
+    <div class="bet-section">
+      <input type="number" id="betAmount" min="1" value="10" placeholder="Bet amount">
+    </div>
+
+    <div class="reels">
+      <div class="reel" id="reel1">🍒</div>
+      <div class="reel" id="reel2">🍊</div>
+      <div class="reel" id="reel3">🍇</div>
+    </div>
+
+    <div class="controls">
+      <button class="choice-btn" id="spinBtn" onclick="spin()">🎰 Spin</button>
+      <button class="secondary" onclick="backToHub()">⬅ Back</button>
+    </div>
+
+    <div class="result" id="result">3 of a kind = 5x, any 2 = 2x</div>
+  </div>
+
+  <script src="game_history.js"></script>
+  <script>
+    // Game state
+    let balance = 1000;
+    let isSpinning = false;
+    let balanceKey = null;
+    
+    // Slot symbols
+    const symbols = ['🍒', '🍊', '🍇', '🍎', '🍋', '💎', '7️⃣', '🎰'];
+    
+    // Payout multipliers
+    const payouts = {
+      '3': 5,  // 3 of a kind
+      '2': 2   // 2 of a kind
+    };
+    
+    // Initialize game
+    function initGame() {
+      // Load balance from localStorage to match welcome page
+      const uname = (localStorage.getItem('username') || 'Player').toString();
+      balanceKey = `balance:${uname}`;
+      const savedBalance = localStorage.getItem(balanceKey);
+      let balanceNum = parseInt(savedBalance);
+      
+      if (isNaN(balanceNum) || savedBalance === null || savedBalance === undefined || savedBalance === '') {
+        // Set default balance if none exists or invalid
+        balance = 0;
+        localStorage.setItem(balanceKey, balance.toString());
+      } else {
+        balance = balanceNum;
+      }
+      updateBalance();
+    }
+    
+    // Update balance display
+    function updateBalance() {
+      // Ensure balance is always a valid number
+      if (isNaN(balance)) {
+        balance = 0;
+      }
+      document.getElementById('balance').textContent = `$${balance}`;
+      localStorage.setItem(balanceKey, balance.toString());
+      // Sync to admin wallets and broadcast
+      try {
+        const users = JSON.parse(localStorage.getItem('demo_users') || '[]');
+        const wallets = JSON.parse(localStorage.getItem('demo_wallets') || '{}');
+        const uname = (localStorage.getItem('username') || 'Player').toString();
+        const user = users.find(u => String(u.username).toLowerCase() === uname.toLowerCase());
+        if (user) {
+          if (!wallets[user.id]) wallets[user.id] = { balance: 0 };
+          wallets[user.id].balance = balance;
+          localStorage.setItem('demo_wallets', JSON.stringify(wallets));
+          localStorage.setItem('balance_sync', JSON.stringify({ username: uname, balance: balance, ts: Date.now() }));
+        }
+      } catch(_) {}
+    }
+    
+    // Spin the slot machine
+    function spin() {
+      if (isSpinning) return;
+      
+      const betAmount = parseInt(document.getElementById('betAmount').value);
+      
+      // Validate bet
+      if (betAmount < 1) {
+        showResult('Please enter a valid bet amount!', false);
+        return;
+      }
+      
+      if (betAmount > balance) {
+        showResult('Insufficient balance!', false);
+        return;
+      }
+      
+      // Track player action - spinning slots
+      addPlayerAction('slots', 'spin', { bet_amount: betAmount });
+      
+      // Deduct bet
+      balance -= betAmount;
+      updateBalance();
+      
+      // Start spinning
+      isSpinning = true;
+      document.getElementById('spinBtn').disabled = true;
+      document.getElementById('spinBtn').textContent = 'Spinning...';
+      
+      // Add spinning animation
+      const reels = document.querySelectorAll('.reel');
+      reels.forEach(reel => reel.classList.add('spinning'));
+      
+      // Generate random symbols
+      const result = [];
+      for (let i = 0; i < 3; i++) {
+        result.push(symbols[Math.floor(Math.random() * symbols.length)]);
+      }
+      
+      // Stop spinning after delay
+      setTimeout(() => {
+        stopSpinning(result);
+      }, 2000);
+    }
+    
+    // Stop spinning and show results
+    function stopSpinning(result) {
+      // Remove spinning animation
+      const reels = document.querySelectorAll('.reel');
+      reels.forEach((reel, index) => {
+        reel.classList.remove('spinning');
+        reel.textContent = result[index];
+      });
+      
+      // Calculate winnings
+      let winnings = calculateWinnings(result);
+      // Apply 25% win rate bias
+      if (winnings > 0 && Math.random() > 0.25) {
+        winnings = 0;
+      }
+      const betAmount = parseInt(document.getElementById('betAmount').value);
+      
+      // Track player action - spin result
+      addPlayerAction('slots', 'result', { 
+        symbols: result.join(', '),
+        bet_amount: betAmount,
+        winnings: winnings,
+        result: winnings > 0 ? 'win' : 'loss'
+      });
+      
+      if (winnings > 0) {
+        balance += winnings;
+        showResult(`🎉 WIN! You won $${winnings}!`, true);
+      } else {
+        showResult('Better luck next time!', false);
+      }
+      
+      // Always update balance display after game ends
+      updateBalance();
+      
+      // Reset spin button
+      isSpinning = false;
+      document.getElementById('spinBtn').disabled = false;
+      document.getElementById('spinBtn').textContent = '🎰 Spin';
+    }
+    
+    // Calculate winnings based on result
+    function calculateWinnings(result) {
+      const betAmount = parseInt(document.getElementById('betAmount').value);
+      
+      // Count occurrences of each symbol
+      const counts = {};
+      result.forEach(symbol => {
+        counts[symbol] = (counts[symbol] || 0) + 1;
+      });
+      
+      // Find highest count
+      const maxCount = Math.max(...Object.values(counts));
+      
+      if (maxCount >= 3) {
+        return betAmount * payouts['3'];
+      } else if (maxCount >= 2) {
+        return betAmount * payouts['2'];
+      }
+      
+      return 0;
+    }
+    
+    // Show result message
+    function showResult(message, isWin) {
+      const resultDiv = document.getElementById('result');
+      resultDiv.textContent = message;
+      
+      if (isWin) {
+        resultDiv.classList.add('win');
+        setTimeout(() => {
+          resultDiv.classList.remove('win');
+        }, 2000);
+      }
+    }
+    
+    // Go back to welcome page
+    function backToHub() {
+      window.location.href = 'welcome.html';
+    }
+    
+    // Initialize game when page loads
+    window.onload = initGame;
+  </script>
+</body>
+</html>

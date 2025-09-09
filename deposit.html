@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deposit - MyCasino</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="sync_storage.js"></script>
+    <style>
+        .deposit-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .deposit-form {
+            background: #2d3748;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #fbbf24;
+            font-weight: bold;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #4a5568;
+            border-radius: 8px;
+            background: #1a202c;
+            color: white;
+            font-size: 16px;
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #fbbf24;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(72, 187, 120, 0.4);
+        }
+        
+        .requests-section {
+            margin-top: 40px;
+        }
+        
+        .request-card {
+            background: #1a202c;
+            border: 2px solid #4a5568;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            transition: all 0.3s;
+        }
+        
+        .request-card:hover {
+            border-color: #fbbf24;
+            transform: translateY(-2px);
+        }
+        
+        .request-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .request-id {
+            background: #fbbf24;
+            color: #2d3748;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .request-status {
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-pending {
+            background: #ed8936;
+            color: white;
+        }
+        
+        .status-approved {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .status-rejected {
+            background: #e53e3e;
+            color: white;
+        }
+        
+        .request-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .detail-item {
+            background: #2d3748;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        
+        .detail-label {
+            color: #a0aec0;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            color: white;
+            font-weight: bold;
+        }
+        
+        .request-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .action-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .approve-btn {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .reject-btn {
+            background: #e53e3e;
+            color: white;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .no-requests {
+            text-align: center;
+            color: #a0aec0;
+            font-style: italic;
+            padding: 40px;
+        }
+        
+        .success-message {
+            background: #48bb78;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .error-message {
+            background: #e53e3e;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .ethereum-info {
+            background: linear-gradient(135deg, #1a202c, #2d3748);
+            border: 2px solid #fbbf24;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .ethereum-info h4 {
+            color: #fbbf24;
+            margin-bottom: 10px;
+        }
+        
+        .ethereum-info p {
+            color: #a0aec0;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">🎰 MyCasino</div>
+        <ul class="nav-links">
+            <li><a href="welcome.html">Home</a></li>
+            <li><a href="welcome.html#games">Games</a></li>
+            <li><a href="welcome.html#wallet">Wallet</a></li>
+            <li><a href="welcome.html#help">Help</a></li>
+        </ul>
+    </nav>
+
+    <header class="header">
+        <h1>💰 Deposit Request</h1>
+        <h2>Balance: <span id="balance"></span> 💰</h2>
+    </header>
+
+    <div class="deposit-container">
+        <div class="ethereum-info">
+            <h4>💎 Ethereum Deposit Process</h4>
+            <p>1. Submit your deposit request below</p>
+            <p>2. Admin will contact you via email with the Ethereum address to send payment to</p>
+            <p>3. Send ETH to the provided address</p>
+            <p>4. Your balance will be updated once payment is confirmed</p>
+        </div>
+        
+        <div class="deposit-form">
+            <h2>Submit Deposit Request</h2>
+            <form id="depositForm">
+                <div class="form-group">
+                    <label for="amount">Amount ($)</label>
+                    <input type="number" id="amount" name="amount" min="10" max="10000" required>
+                </div>
+                
+
+                
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required>
+                    <small style="color: #a0aec0; font-size: 12px;">For admin communication about your deposit</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="notes">Message to Admin (Optional)</label>
+                    <textarea id="notes" name="notes" rows="3" placeholder="Any special instructions or message for the admin..."></textarea>
+                </div>
+                
+                <button type="submit" class="submit-btn">Submit Deposit Request</button>
+            </form>
+        </div>
+
+        <div class="requests-section">
+            <h2>Your Deposit Requests</h2>
+            <div id="requestsList">
+                <!-- Requests will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let depositRequests = JSON.parse(localStorage.getItem('depositRequests') || '[]');
+        let requestCounter = parseInt(localStorage.getItem('requestCounter') || '0');
+
+        function updateBalance() {
+            const uname = (localStorage.getItem('username') || 'Player').toString();
+            const balanceKey = `balance:${uname}`;
+            let balance = localStorage.getItem(balanceKey) || '0';
+            let balanceNum = parseInt(balance);
+            if (isNaN(balanceNum)) {
+                balanceNum = 0;
+                localStorage.setItem(balanceKey, balanceNum.toString());
+            }
+            document.getElementById('balance').textContent = balanceNum;
+        }
+
+        function generateRequestId() {
+            requestCounter++;
+            localStorage.setItem('requestCounter', requestCounter);
+            return `DEP-${Date.now()}-${requestCounter}`;
+        }
+
+        function saveRequests() {
+            localStorage.setItem('depositRequests', JSON.stringify(depositRequests));
+        }
+
+        function displayRequests() {
+            const requestsList = document.getElementById('requestsList');
+            
+            if (depositRequests.length === 0) {
+                requestsList.innerHTML = '<div class="no-requests">No deposit requests found.</div>';
+                return;
+            }
+
+            requestsList.innerHTML = depositRequests
+                .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+                .map(request => `
+                    <div class="request-card">
+                        <div class="request-header">
+                            <span class="request-id">${request.id}</span>
+                            <span class="request-status status-${request.status}">${request.status.toUpperCase()}</span>
+                        </div>
+                        <div class="request-details">
+                            <div class="detail-item">
+                                <div class="detail-label">Amount</div>
+                                <div class="detail-value">$${request.amount}</div>
+                            </div>
+
+                            <div class="detail-item">
+                                <div class="detail-label">Date</div>
+                                <div class="detail-value">${new Date(request.timestamp).toLocaleDateString()}</div>
+                            </div>
+                        </div>
+                        ${request.notes ? `
+                            <div class="detail-item">
+                                <div class="detail-label">Notes</div>
+                                <div class="detail-value">${request.notes}</div>
+                            </div>
+                        ` : ''}
+                        <div class="no-requests" style="padding:10px 0;">
+                            Awaiting admin approval. You will be notified once processed.
+                        </div>
+                    </div>
+                `).join('');
+        }
+        
+
+        function showMessage(message, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = type === 'success' ? 'success-message' : 'error-message';
+            messageDiv.textContent = message;
+            
+            const container = document.querySelector('.deposit-container');
+            container.insertBefore(messageDiv, container.firstChild);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 5000);
+        }
+
+        document.getElementById('depositForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            
+            const request = {
+                id: generateRequestId(),
+                amount: formData.get('amount'),
+                email: formData.get('email'),
+                notes: formData.get('notes'),
+                status: 'pending',
+                timestamp: new Date().toISOString()
+            };
+            
+            depositRequests.push(request);
+            saveRequests();
+            displayRequests();
+            
+            e.target.reset();
+            showMessage('Deposit request submitted successfully! Admin will contact you via email with payment instructions.', 'success');
+        });
+
+        // Initialize page
+        updateBalance();
+        displayRequests();
+    </script>
+</body>
+</html>
+
+

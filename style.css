@@ -1,0 +1,228 @@
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: #111;
+  color: white;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  background: #222;
+}
+
+.navbar .logo {
+  font-size: 1.5em;
+  color: gold;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+}
+
+.nav-links li a, .logout-btn {
+  color: white;
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+.nav-links li a[href="admin-login.html"] {
+  color: #fbbf24;
+  font-weight: bold;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  transition: all 0.3s ease;
+}
+
+.nav-links li a[href="admin-login.html"]:hover {
+  background: rgba(251, 191, 36, 0.2);
+  border-color: #fbbf24;
+  transform: translateY(-1px);
+}
+
+.header {
+  text-align: center;
+  padding: 40px;
+}
+
+.header h3 {
+  color: #a0aec0;
+  font-size: 16px;
+  margin-top: 10px;
+  font-weight: normal;
+}
+
+.wallet-section, .games-section, .help-section, .contact-section {
+  padding: 30px;
+  text-align: center;
+}
+
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 20px;
+}
+
+.game-card {
+  background: #222;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+.game-card img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 10px;
+  transition: transform 0.3s ease;
+}
+
+.game-card:hover img {
+  transform: scale(1.05);
+}
+
+.game-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(251, 191, 36, 0.3);
+}
+
+.auth-body {
+  background: linear-gradient(135deg, #000, #333);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.auth-card {
+  background: rgba(0,0,0,0.8);
+  padding: 40px;
+  border-radius: 20px;
+  width: 350px;
+  text-align: center;
+  box-shadow: 0 0 20px rgba(0,0,0,0.6);
+}
+
+.auth-title {
+  color: gold;
+  margin-bottom: 10px;
+}
+
+.auth-hint {
+  color: #a0aec0;
+  font-size: 12px;
+  margin-bottom: 20px;
+  font-style: italic;
+}
+
+.auth-card input {
+  width: 100%;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+}
+
+.auth-btn {
+  width: 100%;
+  padding: 12px;
+  background: gold;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+/* Wallet Management Buttons */
+.wallet-buttons, .help-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.deposit-btn, .withdraw-btn, .admin-btn, .wallet-btn, .help-btn, .contact-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 30px;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  min-width: 150px;
+  text-decoration: none;
+  color: white;
+}
+
+.deposit-btn {
+  background: linear-gradient(135deg, #48bb78, #38a169);
+  box-shadow: 0 4px 15px rgba(72, 187, 120, 0.3);
+}
+
+.withdraw-btn {
+  background: linear-gradient(135deg, #e53e3e, #c53030);
+  box-shadow: 0 4px 15px rgba(229, 62, 62, 0.3);
+}
+
+.admin-btn {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
+}
+
+.wallet-btn {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.help-btn {
+  background: linear-gradient(135deg, #38b2ac, #319795);
+  box-shadow: 0 4px 15px rgba(56, 178, 172, 0.3);
+}
+
+.contact-btn {
+  background: linear-gradient(135deg, #ed8936, #dd6b20);
+  box-shadow: 0 4px 15px rgba(237, 137, 54, 0.3);
+}
+
+.deposit-btn:hover, .withdraw-btn:hover, .admin-btn:hover, .wallet-btn:hover, .help-btn:hover, .contact-btn:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+.btn-icon {
+  font-size: 2em;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.btn-text {
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Responsive design for wallet buttons */
+@media (max-width: 768px) {
+  .wallet-buttons, .help-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .deposit-btn, .withdraw-btn, .admin-btn, .wallet-btn, .help-btn, .contact-btn {
+    width: 200px;
+  }
+}

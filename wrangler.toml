@@ -1,0 +1,20 @@
+name = "casino-app"
+main = "server.js"
+compatibility_date = "2024-01-01"
+
+[env.production]
+name = "casino-app-prod"
+
+[env.staging]
+name = "casino-app-staging"
+
+[site]
+bucket = "./"
+entry-point = "."
+
+[build]
+command = "npm install"
+
+
+
+

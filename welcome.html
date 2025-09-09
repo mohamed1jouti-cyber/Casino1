@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome - MyCasino</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="sync_storage.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">🎰 MyCasino</div>
+    <ul class="nav-links">
+      <li><a href="welcome.html">Home</a></li>
+      <li><a href="#games">Games</a></li>
+      <li><a href="#wallet">Wallet</a></li>
+      <li><a href="#help">Help</a></li>
+      <li><a href="#contact">Contact</a></li>
+      <li><a href="admin-login.html">🔧 Admin</a></li>
+      <li><a href="history.html">📜 History</a></li>
+      <li>
+        <button class="notif-btn" onclick="window.location.href='notifications.html'">
+          Notifications <span id="notifCount" style="background:#fbbf24;color:#1e293b;border-radius:50%;padding:2px 8px;font-weight:bold;margin-left:4px;">0</span>
+        </button>
+      </li>
+      <li><button class="logout-btn" onclick="logout()">Logout</button></li>
+    </ul>
+  </nav>
+
+  <header class="header">
+    <h1>Welcome, <span id="username"></span> 🎉</h1>
+    <h2>Your Balance: <span id="balance"></span> 💰</h2>
+    <h3>📧 <span id="useremail"></span></h3>
+  </header>
+
+  <section id="wallet" class="wallet-section">
+    <h2>👤 Account & Wallet</h2>
+    <div class="wallet-buttons">
+      <button class="wallet-btn" onclick="window.location.href='account.html'">
+        <span class="btn-icon">👤</span>
+        <span class="btn-text">My Account</span>
+      </button>
+      <button class="deposit-btn" onclick="window.location.href='deposit.html'">
+        <span class="btn-icon">💳</span>
+        <span class="btn-text">Deposit Funds</span>
+      </button>
+      <button class="withdraw-btn" onclick="window.location.href='withdraw.html'">
+        <span class="btn-icon">💸</span>
+        <span class="btn-text">Withdraw Funds</span>
+      </button>
+      <button class="wallet-btn" onclick="window.location.href='wallet.html#transferRequestBox'">
+        <span class="btn-icon">📤</span>
+        <span class="btn-text">Request Transfer</span>
+      </button>
+      <button class="wallet-btn" id="vipActionBtn" onclick="goVipAction()">
+        <span class="btn-icon">👑</span>
+        <span class="btn-text" id="vipActionText">Request VIP</span>
+      </button>
+    </div>
+  </section>
+
+  <section id="games" class="games-section">
+    <h2>Choose Your Game</h2>
+    <div class="games-grid">
+      <a href="poker.html" class="game-card"><img src="images/poker.svg" alt="Poker"><p>Poker</p></a>
+      <a href="roulette.html" class="game-card"><img src="images/roulette.svg" alt="Roulette"><p>Roulette</p></a>
+      <a href="slots.html" class="game-card"><img src="images/slots.svg" alt="Slots"><p>Slots</p></a>
+      <a href="blackjack.html" class="game-card"><img src="images/blackjack.svg" alt="Blackjack"><p>Blackjack</p></a>
+      <a href="baccarat.html" class="game-card"><img src="images/baccarat.svg" alt="Baccarat"><p>Baccarat</p></a>
+      <a href="craps.html" class="game-card"><img src="images/craps.svg" alt="Craps"><p>Craps</p></a>
+      <a href="keno.html" class="game-card"><img src="images/keno.svg" alt="Keno"><p>Keno</p></a>
+    </div>
+  </section>
+
+  <section id="help" class="help-section">
+    <h2>❓ Help & Support</h2>
+    <div class="help-buttons">
+      <button class="help-btn" onclick="window.location.href='help.html'">
+        <span class="btn-icon">📚</span>
+        <span class="btn-text">Help & FAQ</span>
+      </button>
+      <button class="contact-btn" onclick="window.location.href='contact.html'">
+        <span class="btn-icon">📞</span>
+        <span class="btn-text">Contact Support</span>
+      </button>
+    </div>
+  </section>
+
+
+  
+  <script src="main.js"></script>
+  <script>
+    // Show notification count for current user
+    function updateNotificationCount() {
+      const username = localStorage.getItem('username') || 'anonymous';
+      const notifications = JSON.parse(localStorage.getItem('notifications') || '{}');
+      const unreadCount = notifications[username] ? notifications[username].filter(n => !n.read).length : 0;
+      document.getElementById('notifCount').textContent = unreadCount;
+    }
+    // Reflect total deposits/withdrawals on welcome
+    function updateTotalsOnWelcome() {
+      const totalDeposits = parseFloat(localStorage.getItem('totalDeposits') || '0');
+      const totalWithdrawals = parseFloat(localStorage.getItem('totalWithdrawals') || '0');
+      // Optionally show via console or add elements if needed
+      console.log('Totals:', { totalDeposits, totalWithdrawals });
+    }
+    function goVipAction(){
+      try{
+        const uname = (localStorage.getItem('username')||'Player').toString();
+        const users = JSON.parse(localStorage.getItem('demo_users')||'[]');
+        const u = users.find(x=>String(x.username).toLowerCase()===uname.toLowerCase());
+        if(u && u.is_vip){
+          window.location.href = 'wallet.html#vipTransfer';
+        } else {
+          window.location.href = 'wallet.html#vipTransfer';
+        }
+      }catch(_){ window.location.href='wallet.html#vipTransfer'; }
+    }
+    function updateVipButtonText(){
+      try{
+        const uname = (localStorage.getItem('username')||'Player').toString();
+        const users = JSON.parse(localStorage.getItem('demo_users')||'[]');
+        const u = users.find(x=>String(x.username).toLowerCase()===uname.toLowerCase());
+        const el = document.getElementById('vipActionText');
+        if(el){ el.textContent = (u && u.is_vip) ? 'VIP Transfer' : 'Request VIP'; }
+      }catch(_){}
+    }
+    
+    // Update count when page loads
+    updateNotificationCount();
+    updateTotalsOnWelcome();
+    updateVipButtonText();
+    
+    // Update count when page becomes visible (user returns from notifications)
+    document.addEventListener('visibilitychange', function() {
+      if (!document.hidden) {
+        updateNotificationCount();
+        updateTotalsOnWelcome();
+        updateVipButtonText();
+      }
+    });
+  </script>
+</body>
+</html>

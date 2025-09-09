@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game History - MyCasino</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .history-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .history-filters {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .filter-btn {
+      padding: 8px 16px;
+      background: #2d3748;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .filter-btn:hover {
+      background: #4a5568;
+    }
+    
+    .filter-btn.active {
+      background: #4299e1;
+    }
+    
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    
+    .history-table th,
+    .history-table td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .history-table th {
+      background: rgba(0, 0, 0, 0.3);
+      color: #fbbf24;
+      font-weight: bold;
+    }
+    
+    .history-table tr:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .history-table tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .empty-history {
+      text-align: center;
+      padding: 40px;
+      color: rgba(255, 255, 255, 0.6);
+      font-style: italic;
+    }
+    
+    .action-blackjack { color: #38b2ac; }
+    .action-roulette { color: #ed8936; }
+    .action-slots { color: #9f7aea; }
+    .action-baccarat { color: #4299e1; }
+    .action-craps { color: #48bb78; }
+    .action-keno { color: #f56565; }
+    .action-poker { color: #ecc94b; }
+    
+    .clear-history {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #e53e3e;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .clear-history:hover {
+      background: #c53030;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">🎰 MyCasino</div>
+    <ul class="nav-links">
+      <li><a href="welcome.html">Home</a></li>
+      <li><a href="welcome.html#games">Games</a></li>
+      <li><a href="welcome.html#wallet">Wallet</a></li>
+      <li><a href="welcome.html#help">Help</a></li>
+      <li><a href="welcome.html#contact">Contact</a></li>
+      <li><a href="admin-login.html">🔧 Admin</a></li>
+      <li><a href="history.html" class="active">📜 History</a></li>
+      <li><button class="logout-btn" onclick="logout()">Logout</button></li>
+    </ul>
+  </nav>
+
+  <header class="header">
+    <h1>Game Action History 📜</h1>
+    <p>Track your gameplay actions and decisions</p>
+  </header>
+
+  <section class="history-container">
+    <div class="history-filters">
+      <button class="filter-btn active" data-game="all">All Games</button>
+      <button class="filter-btn" data-game="blackjack">Blackjack</button>
+      <button class="filter-btn" data-game="roulette">Roulette</button>
+      <button class="filter-btn" data-game="slots">Slots</button>
+      <button class="filter-btn" data-game="baccarat">Baccarat</button>
+      <button class="filter-btn" data-game="craps">Craps</button>
+      <button class="filter-btn" data-game="keno">Keno</button>
+      <button class="filter-btn" data-game="poker">Poker</button>
+    </div>
+    
+    <div class="table-container">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Game</th>
+            <th>Action</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody id="history-data">
+          <!-- Data will be populated by JavaScript -->
+        </tbody>
+      </table>
+    </div>
+    
+    <button class="clear-history" onclick="confirmClearHistory()">Clear History</button>
+  </section>
+
+  <script src="demo-mode.js"></script>
+  <script src="game_history.js"></script>
+  <script src="main.js"></script>
+  <script>
+    // Check if user is logged in
+    if (!localStorage.getItem('username')) {
+      window.location.href = 'index.html';
+    }
+    
+    // Populate history table
+    function populateHistory(game = null) {
+      const historyData = document.getElementById('history-data');
+      const actions = getActionHistory(game);
+      
+      historyData.innerHTML = '';
+      
+      if (actions.length === 0) {
+        historyData.innerHTML = `
+          <tr>
+            <td colspan="4" class="empty-history">
+              No action history found. Play some games to see your actions here!
+            </td>
+          </tr>
+        `;
+        return;
+      }
+      
+      actions.forEach(action => {
+        const row = document.createElement('tr');
+        
+        // Format details object to readable string
+        let detailsText = '';
+        if (action.details) {
+          const details = action.details;
+          detailsText = Object.keys(details)
+            .map(key => `${key}: ${details[key]}`)
+            .join(', ');
+        }
+        
+        row.innerHTML = `
+          <td>${formatTimestamp(action.timestamp)}</td>
+          <td class="action-${action.game}">${action.game}</td>
+          <td>${action.action}</td>
+          <td>${detailsText}</td>
+        `;
+        
+        historyData.appendChild(row);
+      });
+    }
+    
+    // Filter history by game
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Update active button
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        // Filter history
+        const game = btn.dataset.game;
+        populateHistory(game === 'all' ? null : game);
+      });
+    });
+    
+    // Confirm before clearing history
+    function confirmClearHistory() {
+      if (confirm('Are you sure you want to clear your action history? This cannot be undone.')) {
+        clearActionHistory();
+        populateHistory();
+      }
+    }
+    
+    // Initialize on page load
+    window.onload = function() {
+      populateHistory();
+    };
+  </script>
+</body>
+</html>

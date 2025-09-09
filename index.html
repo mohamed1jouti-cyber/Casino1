@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - MyCasino</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="sync_storage.js"></script>
+</head>
+<body class="auth-body">
+  <div class="auth-container">
+    <div class="auth-card">
+      <h1 class="auth-title">🎲 MyCasino</h1>
+      <p class="auth-subtitle">Login to continue</p>
+      <p class="auth-hint">You can login with your username or email address</p>
+      <form id="loginForm">
+        <input type="text" id="loginUsername" placeholder="Username or Email" required>
+        <input type="password" id="loginPassword" placeholder="Password" required>
+        <button type="submit" class="auth-btn">Login</button>
+      </form>
+      <p class="auth-footer">
+        Don't have an account? <a href="signup.html">Sign up</a> | 
+        <a href="#" onclick="showForgotPassword()">Forgot Password?</a>
+      </p>
+    </div>
+  </div>
+  <script src="demo-mode.js"></script>
+  <script src="auth.js"></script>
+</body>
+</html>

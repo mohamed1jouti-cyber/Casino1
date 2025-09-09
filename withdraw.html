@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Withdraw - MyCasino</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="sync_storage.js"></script>
+    <style>
+        .withdraw-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .withdraw-form {
+            background: #2d3748;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #fbbf24;
+            font-weight: bold;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #4a5568;
+            border-radius: 8px;
+            background: #1a202c;
+            color: white;
+            font-size: 16px;
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #fbbf24;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #e53e3e, #c53030);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(229, 62, 62, 0.4);
+        }
+        
+        .submit-btn:disabled {
+            background: #718096;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .requests-section {
+            margin-top: 40px;
+        }
+        
+        .request-card {
+            background: #1a202c;
+            border: 2px solid #4a5568;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            transition: all 0.3s;
+        }
+        
+        .request-card:hover {
+            border-color: #fbbf24;
+            transform: translateY(-2px);
+        }
+        
+        .request-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .request-id {
+            background: #fbbf24;
+            color: #2d3748;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .request-status {
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-pending {
+            background: #ed8936;
+            color: white;
+        }
+        
+        .status-approved {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .status-rejected {
+            background: #e53e3e;
+            color: white;
+        }
+        
+        .request-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .detail-item {
+            background: #2d3748;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        
+        .detail-label {
+            color: #a0aec0;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            color: white;
+            font-weight: bold;
+        }
+        
+        .request-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .action-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .approve-btn {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .reject-btn {
+            background: #e53e3e;
+            color: white;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .no-requests {
+            text-align: center;
+            color: #a0aec0;
+            font-style: italic;
+            padding: 40px;
+        }
+        
+        .success-message {
+            background: #48bb78;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .error-message {
+            background: #e53e3e;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .ethereum-info {
+            background: linear-gradient(135deg, #1a202c, #2d3748);
+            border: 2px solid #fbbf24;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .ethereum-info h4 {
+            color: #fbbf24;
+            margin-bottom: 10px;
+        }
+        
+        .ethereum-info p {
+            color: #a0aec0;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+        
+        .balance-info {
+            background: #1a202c;
+            border: 2px solid #fbbf24;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .balance-amount {
+            font-size: 2em;
+            color: #fbbf24;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .min-withdrawal {
+            color: #a0aec0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">🎰 MyCasino</div>
+        <ul class="nav-links">
+            <li><a href="welcome.html">Home</a></li>
+            <li><a href="welcome.html#games">Games</a></li>
+            <li><a href="welcome.html#wallet">Wallet</a></li>
+            <li><a href="welcome.html#help">Help</a></li>
+        </ul>
+    </nav>
+
+    <header class="header">
+        <h1>💸 Withdraw Request</h1>
+        <h2>Balance: <span id="balance"></span> 💰</h2>
+    </header>
+
+    <div class="withdraw-container">
+        <div class="ethereum-info">
+            <h4>💎 Ethereum Withdrawal Process</h4>
+            <p>1. Enter your Ethereum wallet address below</p>
+            <p>2. Submit your withdrawal request</p>
+            <p>3. Admin will review and process your request</p>
+            <p>4. ETH will be sent to your provided address</p>
+            <p>5. You'll receive email confirmation once completed</p>
+        </div>
+        
+        <div class="balance-info">
+            <h3>Available Balance</h3>
+            <div class="balance-amount">$<span id="availableBalance">0</span></div>
+            <div class="min-withdrawal">Minimum withdrawal: $50</div>
+        </div>
+
+        <div class="withdraw-form">
+            <h2>Submit Withdrawal Request</h2>
+            <form id="withdrawForm">
+                <div class="form-group">
+                    <label for="amount">Amount ($)</label>
+                    <input type="number" id="amount" name="amount" min="50" max="10000" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="ethereumAddress">Your Ethereum Address</label>
+                    <input type="text" id="ethereumAddress" name="ethereumAddress" placeholder="0x..." required>
+                    <small style="color: #a0aec0; font-size: 12px;">Enter your Ethereum wallet address to receive withdrawal funds</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required>
+                    <small style="color: #a0aec0; font-size: 12px;">For admin communication about your withdrawal</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="notes">Message to Admin (Optional)</label>
+                    <textarea id="notes" name="notes" rows="3" placeholder="Any special instructions or message for the admin..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="secCode">Security Code</label>
+                    <input type="password" id="secCode" name="secCode" placeholder="Enter your security code" required>
+                    <small style="color: #a0aec0; font-size: 12px;">Required for withdrawals</small>
+                </div>
+                
+                <button type="submit" class="submit-btn" id="submitBtn">Submit Withdrawal Request</button>
+            </form>
+        </div>
+
+        <div class="requests-section">
+            <h2>Your Withdrawal Requests</h2>
+            <div id="requestsList">
+                <!-- Requests will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let withdrawRequests = JSON.parse(localStorage.getItem('withdrawRequests') || '[]');
+        let requestCounter = parseInt(localStorage.getItem('withdrawRequestCounter') || '0');
+
+        function updateBalance() {
+            const uname = (localStorage.getItem('username') || 'Player').toString();
+            const balanceKey = `balance:${uname}`;
+            let balance = localStorage.getItem(balanceKey) || '0';
+            let balanceNum = parseInt(balance);
+            if (isNaN(balanceNum)) {
+                balanceNum = 0;
+                localStorage.setItem(balanceKey, balanceNum.toString());
+            }
+            document.getElementById('balance').textContent = balanceNum;
+            document.getElementById('availableBalance').textContent = balanceNum;
+            
+            // Update form validation
+            const amountInput = document.getElementById('amount');
+            const submitBtn = document.getElementById('submitBtn');
+            const maxAmount = balanceNum;
+            
+            amountInput.max = maxAmount;
+            
+            if (parseInt(amountInput.value) > maxAmount) {
+                amountInput.value = maxAmount;
+            }
+        }
+
+        function generateRequestId() {
+            requestCounter++;
+            localStorage.setItem('withdrawRequestCounter', requestCounter);
+            return `WTH-${Date.now()}-${requestCounter}`;
+        }
+
+        function saveRequests() {
+            localStorage.setItem('withdrawRequests', JSON.stringify(withdrawRequests));
+        }
+
+        function displayRequests() {
+            const requestsList = document.getElementById('requestsList');
+            
+            if (withdrawRequests.length === 0) {
+                requestsList.innerHTML = '<div class="no-requests">No withdrawal requests found.</div>';
+                return;
+            }
+
+            requestsList.innerHTML = withdrawRequests
+                .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+                .map(request => `
+                    <div class="request-card">
+                        <div class="request-header">
+                            <span class="request-id">${request.id}</span>
+                            <span class="request-status status-${request.status}">${request.status.toUpperCase()}</span>
+                        </div>
+                        <div class="request-details">
+                            <div class="detail-item">
+                                <div class="detail-label">Amount</div>
+                                <div class="detail-value">$${request.amount}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Ethereum Address</div>
+                                <div class="detail-value">${request.ethereumAddress}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Date</div>
+                                <div class="detail-value">${new Date(request.timestamp).toLocaleDateString()}</div>
+                            </div>
+                        </div>
+                        ${request.notes ? `
+                            <div class="detail-item">
+                                <div class="detail-label">Notes</div>
+                                <div class="detail-value">${request.notes}</div>
+                            </div>
+                        ` : ''}
+                        <div class="no-requests" style="padding:10px 0;">
+                            Awaiting admin approval. You will be notified once processed.
+                        </div>
+                    </div>
+                `).join('');
+        }
+
+        
+
+        function showMessage(message, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = type === 'success' ? 'success-message' : 'error-message';
+            messageDiv.textContent = message;
+            
+            const container = document.querySelector('.withdraw-container');
+            container.insertBefore(messageDiv, container.firstChild);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 5000);
+        }
+
+        function validateForm() {
+            const amount = parseInt(document.getElementById('amount').value);
+            const uname = (localStorage.getItem('username') || 'Player').toString();
+            const balanceKey = `balance:${uname}`;
+            let balance = parseInt(localStorage.getItem(balanceKey) || '0');
+            if (isNaN(balance)) balance = 0;
+            const submitBtn = document.getElementById('submitBtn');
+            
+            if (amount > balance) {
+                showMessage('Withdrawal amount cannot exceed your available balance!', 'error');
+                submitBtn.disabled = true;
+                return false;
+            } else if (amount < 50) {
+                showMessage('Minimum withdrawal amount is $50!', 'error');
+                submitBtn.disabled = true;
+                return false;
+            } else {
+                submitBtn.disabled = false;
+                return true;
+            }
+        }
+
+        document.getElementById('withdrawForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!validateForm()) {
+                return;
+            }
+            
+            const formData = new FormData(e.target);
+            const ethereumAddress = formData.get('ethereumAddress');
+            
+            // Basic Ethereum address validation
+            const ethAddressRegex = /^0x[a-fA-F0-9]{40}$/;
+            if (!ethAddressRegex.test(ethereumAddress)) {
+                showMessage('Please enter a valid Ethereum address (0x followed by 40 hexadecimal characters).', 'error');
+                return;
+            }
+            
+            const request = {
+                id: generateRequestId(),
+                amount: formData.get('amount'),
+                ethereumAddress: ethereumAddress,
+                email: formData.get('email'),
+                notes: formData.get('notes'),
+                status: 'pending',
+                timestamp: new Date().toISOString()
+            };
+            // Validate security code
+            const uname = (localStorage.getItem('username') || 'Player').toString();
+            const secStored = localStorage.getItem(`sec_code:${uname}`) || '';
+            const secEntered = (document.getElementById('secCode').value || '').trim();
+            if (!secStored || secEntered !== secStored) {
+                showMessage('Invalid or missing security code.', 'error');
+                return;
+            }
+            
+            withdrawRequests.push(request);
+            saveRequests();
+            displayRequests();
+            
+            e.target.reset();
+            showMessage('Withdrawal request submitted successfully! Admin will process your request.', 'success');
+        });
+
+        // Add real-time validation
+        document.getElementById('amount').addEventListener('input', validateForm);
+
+        // Initialize page
+        updateBalance();
+        displayRequests();
+    </script>
+</body>
+</html>
+
+

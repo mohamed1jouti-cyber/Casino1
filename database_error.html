@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Database Connection Error - MyCasino</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .error-container {
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 30px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+    .error-title {
+      color: #e74c3c;
+      margin-bottom: 20px;
+    }
+    .error-message {
+      margin-bottom: 30px;
+      padding: 15px;
+      background-color: #f8d7da;
+      border-left: 5px solid #e74c3c;
+      border-radius: 5px;
+    }
+    .solution-steps {
+      margin-bottom: 30px;
+    }
+    .solution-steps li {
+      margin-bottom: 10px;
+    }
+    .btn {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #3498db;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+    .btn-primary {
+      background-color: #2ecc71;
+    }
+    .btn-secondary {
+      background-color: #3498db;
+    }
+    .btn-demo {
+      background-color: #f39c12;
+    }
+    .demo-mode-info {
+      margin-top: 30px;
+      padding: 15px;
+      background-color: #d4edda;
+      border-left: 5px solid #28a745;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="error-container">
+    <h1 class="error-title">Database Connection Error</h1>
+    
+    <div class="error-message">
+      <p><strong>Error:</strong> Failed to connect to the database. This could be because:</p>
+      <ul>
+        <li>MySQL server is not running</li>
+        <li>Database credentials are incorrect</li>
+        <li>The casino_db database has not been created</li>
+        <li>PHP MySQL extension is not installed</li>
+      </ul>
+    </div>
+    
+    <div class="solution-steps">
+      <h2>How to Fix This Issue:</h2>
+      <ol>
+        <li><strong>Install Required Software:</strong> Make sure you have installed XAMPP, WAMP, or another PHP/MySQL package.</li>
+        <li><strong>Start Services:</strong> Ensure Apache and MySQL services are running.</li>
+        <li><strong>Run Setup Script:</strong> Use the database setup script to create the necessary database and tables.</li>
+        <li><strong>Check Configuration:</strong> Verify that the database credentials in config.php are correct.</li>
+      </ol>
+    </div>
+    
+    <div class="actions">
+      <h2>Quick Actions:</h2>
+      <a href="check_environment.php" class="btn btn-primary">Run Environment Check</a>
+      <a href="setup_database.php" class="btn btn-secondary">Setup Database</a>
+      <a href="README.md" class="btn">View Setup Instructions</a>
+      
+    </div>
+    
+    
+  </div>
+  
+  
+</body>
+</html>

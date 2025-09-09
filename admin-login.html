@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - MyCasino</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="sync_storage.js"></script>
+    <style>
+        .admin-login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 40px;
+            background: linear-gradient(135deg, #1a202c, #2d3748);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        
+        .admin-login-header {
+            margin-bottom: 30px;
+        }
+        
+        .admin-login-header h1 {
+            color: #fbbf24;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .admin-login-header p {
+            color: #a0aec0;
+            font-size: 14px;
+        }
+        
+        .admin-form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .admin-form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #fbbf24;
+            font-weight: bold;
+        }
+        
+        .admin-form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #4a5568;
+            border-radius: 8px;
+            background: #1a202c;
+            color: white;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        
+        .admin-form-group input:focus {
+            outline: none;
+            border-color: #fbbf24;
+        }
+        
+        .admin-login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #1a202c;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+        
+        .admin-login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(251, 191, 36, 0.4);
+        }
+        
+        .back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #4a5568;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+        
+        .back-btn:hover {
+            background: #2d3748;
+        }
+        
+        .error-message {
+            background: #e53e3e;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .success-message {
+            background: #48bb78;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">🎰 MyCasino</div>
+        <ul class="nav-links">
+            <li><a href="welcome.html">Back to Site</a></li>
+        </ul>
+    </nav>
+
+    <div class="admin-login-container">
+        <div class="admin-login-header">
+            <h1>🔒 Admin Access</h1>
+            <p>Enter your admin credentials to access the dashboard</p>
+        </div>
+        
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+        
+        <form id="adminLoginForm">
+            <div class="admin-form-group">
+                <label for="adminUsername">Admin Username</label>
+                <input type="text" id="adminUsername" name="adminUsername" required>
+            </div>
+            
+            <div class="admin-form-group">
+                <label for="adminPassword">Admin Password</label>
+                <input type="password" id="adminPassword" name="adminPassword" required>
+            </div>
+            
+            <button type="submit" class="admin-login-btn">🔓 Login to Admin Dashboard</button>
+        </form>
+        
+        <a href="welcome.html" class="back-btn">← Back to Welcome Page</a>
+    </div>
+
+    <script>
+        // Admin credentials
+        const ADMIN_USERNAME = 'admin';
+        const ADMIN_PASSWORD = '12041998avril1999A';
+        
+        // Check if already logged in
+        if (sessionStorage.getItem('adminLoggedIn') === 'true') {
+            window.location.href = 'admin.html';
+        }
+        
+        function showMessage(message, type) {
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            
+            if (type === 'error') {
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+            } else {
+                successDiv.textContent = message;
+                successDiv.style.display = 'block';
+                errorDiv.style.display = 'none';
+            }
+        }
+        
+        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('adminUsername').value;
+            const password = document.getElementById('adminPassword').value;
+            
+            if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+                // Set admin session
+                sessionStorage.setItem('adminLoggedIn', 'true');
+                sessionStorage.setItem('adminLoginTime', new Date().toISOString());
+                
+                showMessage('Login successful! Redirecting to admin dashboard...', 'success');
+                
+                // Redirect to admin dashboard after 1 second
+                setTimeout(() => {
+                    window.location.href = 'admin.html';
+                }, 1000);
+            } else {
+                showMessage('Invalid admin credentials. Please try again.', 'error');
+                
+                // Clear password field
+                document.getElementById('adminPassword').value = '';
+            }
+        });
+        
+        // Auto-focus on username field
+        document.getElementById('adminUsername').focus();
+    </script>
+</body>
+</html>
+
+
+
+
+
+

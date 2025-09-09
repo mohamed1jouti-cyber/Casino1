@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test History</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    button {
+      padding: 10px;
+      margin: 5px;
+      cursor: pointer;
+    }
+    pre {
+      background: #f4f4f4;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>Game History Test</h1>
+  
+  <div>
+    <h2>Demo Mode Control</h2>
+    <button id="enableDemo">Enable Demo Mode</button>
+    <button id="disableDemo">Disable Demo Mode</button>
+    <p>Current demo mode status: <span id="demoStatus">Checking...</span></p>
+  </div>
+
+  <div>
+    <h2>Action History Test</h2>
+    <button id="addAction">Add Test Action</button>
+    <button id="clearHistory">Clear History</button>
+  </div>
+
+  <div>
+    <h2>Current Action History</h2>
+    <pre id="historyOutput">Loading...</pre>
+  </div>
+
+  <script src="game_history.js"></script>
+  <script>
+    // Update demo status display
+    function updateDemoStatus() {
+      const isDemoMode = localStorage.getItem('demo_mode') === 'true';
+      document.getElementById('demoStatus').textContent = isDemoMode ? 'Enabled' : 'Disabled';
+    }
+
+    // Update history display
+    function updateHistoryDisplay() {
+      const history = getActionHistory();
+      document.getElementById('historyOutput').textContent = 
+        JSON.stringify(history, null, 2);
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      updateDemoStatus();
+      updateHistoryDisplay();
+
+      // Demo mode buttons
+      document.getElementById('enableDemo').addEventListener('click', function() {
+        localStorage.setItem('demo_mode', 'true');
+        updateDemoStatus();
+      });
+
+      document.getElementById('disableDemo').addEventListener('click', function() {
+        localStorage.setItem('demo_mode', 'false');
+        updateDemoStatus();
+      });
+
+      // Action history buttons
+      document.getElementById('addAction').addEventListener('click', function() {
+        addPlayerAction('test', 'test_action', { 
+          timestamp: new Date().toISOString(),
+          details: 'This is a test action'
+        });
+        updateHistoryDisplay();
+      });
+
+      document.getElementById('clearHistory').addEventListener('click', function() {
+        clearActionHistory();
+        updateHistoryDisplay();
+      });
+    });
+  </script>
+</body>
+</html>
