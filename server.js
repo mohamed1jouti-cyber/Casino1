@@ -85,6 +85,19 @@ const server = http.createServer((req, res) => {
     const parsedUrl = url.parse(req.url, true);
     const pathname = parsedUrl.pathname;
 
+    // Health check endpoint
+    if (pathname === '/healthz') {
+        const storage = readStorage();
+        // Basic writeability check: try touching storage file
+        try {
+            writeStorage(storage);
+            sendJSONResponse(res, { ok: true, writable: true, time: Date.now() });
+        } catch (e) {
+            sendJSONResponse(res, { ok: true, writable: false, error: String(e) });
+        }
+        return;
+    }
+
     // Handle storage API
     if (pathname === '/storage_api.php') {
         handleStorageAPI(req, res, parsedUrl);

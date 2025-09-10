@@ -23,15 +23,35 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ key, value })
             });
-            return await res.json();
-        } catch(e){ return { success: false, error: e.message }; }
+            if (!res.ok) {
+                console.error('storage_api set HTTP error', { status: res.status, key });
+            }
+            const json = await res.json();
+            if (!json || json.success !== true) {
+                console.error('storage_api set failed', { key, error: json && json.error });
+            }
+            return json;
+        } catch(e){
+            console.error('storage_api set exception', { key, error: e && e.message });
+            return { success: false, error: e.message };
+        }
     }
 
     async function apiGet(key){
         try {
             const res = await fetch(`${API}?action=get&key=${encodeURIComponent(key)}`);
-            return await res.json();
-        } catch(e){ return { success: false, error: e.message }; }
+            if (!res.ok) {
+                console.warn('storage_api get HTTP error', { status: res.status, key });
+            }
+            const json = await res.json();
+            if (!json || json.success !== true) {
+                console.warn('storage_api get failed', { key, error: json && json.error });
+            }
+            return json;
+        } catch(e){
+            console.warn('storage_api get exception', { key, error: e && e.message });
+            return { success: false, error: e.message };
+        }
     }
 
     function readLocal(key){
