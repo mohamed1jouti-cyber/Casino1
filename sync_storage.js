@@ -9,7 +9,8 @@
         'depositRequests',
         'vip_requests',
         'transfer_requests',
-        'notifications'
+        'notifications',
+        'adminNotifications'
     ];
 
     function isHttp() {

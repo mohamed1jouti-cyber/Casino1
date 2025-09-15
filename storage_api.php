@@ -34,7 +34,8 @@ $allowedExact = [
     'depositRequests',
     'vip_requests',
     'transfer_requests',
-    'notifications'
+    'notifications',
+    'adminNotifications'
 ];
 $allowedPrefixes = [
     'balance:',

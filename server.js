@@ -47,7 +47,8 @@ const ALLOWED_KEYS = [
     'depositRequests',
     'vip_requests',
     'transfer_requests',
-    'notifications'
+    'notifications',
+    'adminNotifications'
 ];
 
 const ALLOWED_PREFIXES = ['balance:', 'sec_code:'];
